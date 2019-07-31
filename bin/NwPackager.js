@@ -2,6 +2,7 @@
   "use strict";
   const NwBuilder = require("nw-builder");
   const path = require("path");
+  const PreActions = require("./PreActions");
 
   /**
    * Class for running NwPackager instances
@@ -20,18 +21,16 @@
       // Combine default and user nw-builder options
       Object.assign(buildOptions, userBuildOptions);
 
-      // Set buildType to "default" regardless of user preference for consistency
+      // Set buildType to "default" regardless of user preference as nwjs-packager controls the package name
       buildOptions.buildType = "default";
 
       this.NwBuilder = new NwBuilder(buildOptions);
-      this.NwBuilder.on("log", console.log);
+      // this.NwBuilder.on("log", console.log);
 
       // Set the default package options
       const packageOptions = {
         // %p% is a special symbol that gets replaced with the os name and architecture
-        "appName": "app", // todo use nwbuilder value or package.json
-        "appVersion": "1.0.0", // todo use nwbuilder value or package.json
-        "package_name": "app-%p%",
+        "package_name": "%a%-%p%",
         "linux": {
           "pre": {
             "desktop_file": true,
@@ -76,32 +75,35 @@
     build() {
       let self = this;
       return new Promise((resolve, reject) => {
-        // The list of promises to resolve
-        const promisesList = [];
-
         // Build app using nw-builder
         console.log("Building app with nw-builder...");
-        promisesList.push(self.NwBuilder.build());
+        self.NwBuilder.build().then(() => {
+          // The list of promises to resolve
+          const promisesList = [];
 
-        // Loop through each platform
-        self.NwBuilder.options.platforms.forEach(function (platform) {
-          // The folder containing the build
-          const BUILD_DIR = path.join(self.NwBuilder.options.buildDir, self.packageOptions.appName, platform);
+          // Loop through each platform
+          self.NwBuilder.options.platforms.forEach(function (platform) {
+            // The folder containing the build
+            console.log(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
+            const BUILD_DIR = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
 
-          // *** Add each pre-packaging action promise ***
-          // Add .desktop file
-          if (platform === "linux32" || platform === "linux64" && self.packageOptions.linux.pre.desktop_file) {
-            promisesList.push(self._pre(BUILD_DIR, desktop_file));
-          }
+            // *** Add each pre-packaging action promise ***
+            // Add .desktop file
+            if (platform === "linux32" || platform === "linux64" && self.packageOptions.linux.pre.desktop_file) {
+              promisesList.push(self._pre(BUILD_DIR, "desktop_file"));
+            }
 
-          // *** Add each packaging promise ***
-          // todo
-        });
+            // *** Add each packaging promise ***
+            // todo
+          });
 
-        // *** Resolve all of the promises ***
-        Promise.all(promisesList).then(function () {
-          resolve();
-        }).catch(function (error) {
+          // *** Resolve all of the promises ***
+          Promise.all(promisesList).then(function () {
+            resolve();
+          }).catch(function (error) {
+            reject(error);
+          });
+        }).catch((error) => {
           reject(error);
         });
       });
@@ -115,18 +117,16 @@
      */
     _pre(buildDir, preType) {
       return new Promise((resolve, reject) => {
-        try {
-          switch (preType) {
-            case "desktop_file":
-              PreActions.makeDesktopFile(this, buildDir).then(() => {
-                resolve();
-              });
-              break;
-            default:
-              throw Error("Invalid pre action type entered");
-          }
-        } catch (error) {
-          reject(error);
+        switch (preType) {
+          case "desktop_file":
+            PreActions.makeDesktopFile(this, buildDir).then(() => {
+              resolve();
+            }).catch((error) => {
+              reject(error);
+            });
+            break;
+          default:
+            reject(Error("Invalid pre action type entered"));
         }
       });
     }
