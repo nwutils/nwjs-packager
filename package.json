@@ -1,8 +1,8 @@
 {
   "name": "nwjs-packager",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Module to build, add packages and release to GitHub NW.js apps",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/charlielee/nwjs-packager/issues"
   },
-  "homepage": "https://github.com/charlielee/nwjs-packager#readme"
+  "homepage": "https://github.com/charlielee/nwjs-packager#readme",
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-google": "^0.13.0"
+  }
 }
