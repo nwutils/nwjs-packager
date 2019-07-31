@@ -2,11 +2,13 @@
   "name": "nwjs-packager",
   "version": "0.1.0",
   "description": "Module to build, add packages and release to GitHub NW.js apps",
-  "main": "build/index.js",
+  "main": "bin/index.js",
   "scripts": {
-    "build": "babel ./src -d ./lib",
     "lint": "eslint ./src",
-    "test": "mocha --require babel-core/register"
+    "test": "mocha"
+  },
+  "bin": {
+    "nwp": "./bin/index.js"
   },
   "repository": {
     "type": "git",
@@ -19,10 +21,11 @@
   },
   "homepage": "https://github.com/charlielee/nwjs-packager#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
     "eslint": "^6.1.0",
     "eslint-config-google": "^0.13.0",
     "mocha": "^6.2.0"
+  },
+  "dependencies": {
+    "nw-builder": "^3.5.7"
   }
 }
