@@ -17,6 +17,12 @@
     },
     "rules": {
         "linebreak-style": "off",
-        "quotes": ["error", "double"]
+        "max-len": ["error", { "code": 100 }],
+        "quotes": ["error", "double"],
+        "space-before-function-paren": ["error", {
+            "anonymous": "always",
+            "named": "never",
+            "asyncArrow": "always"
+        }]
     }
 }

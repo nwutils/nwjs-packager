@@ -1,19 +1,17 @@
 #!/usr/bin/env node
-(function() {
+(function () {
   "use strict";
+  const argv = require("minimist")(process.argv.slice(2));
   const NwPackager = require("./NwPackager");
-  const path = require("path");
 
   if (require.main === module) {
     // Run the packager if run from cli
-    const nwp = new NwPackager({
-      files: path.join(process.cwd(), "**"),
-      platforms: ["win32"]
-    });
+    const nwp = new NwPackager(argv);
 
-    nwp.build().then(function() {
+    console.log("Welcome to nwjs-packager, nw-builder with added package creation!");
+    nwp.build().then(function () {
       console.log("Finished!");
-    }).catch(function(error) {
+    }).catch(function (error) {
       console.error(error);
     });
   } else {

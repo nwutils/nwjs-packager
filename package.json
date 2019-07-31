@@ -26,6 +26,7 @@
     "mocha": "^6.2.0"
   },
   "dependencies": {
+    "minimist": "^1.2.0",
     "nw-builder": "^3.5.7"
   }
 }
