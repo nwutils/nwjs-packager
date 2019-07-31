@@ -29,8 +29,8 @@
       // Set the default package options
       const packageOptions = {
         // %p% is a special symbol that gets replaced with the os name and architecture
-        "appName": "app",
-        "appVersion": "1.0.0",
+        "appName": "app", // todo use nwbuilder value or package.json
+        "appVersion": "1.0.0", // todo use nwbuilder value or package.json
         "package_name": "app-%p%",
         "linux": {
           "pre": {
