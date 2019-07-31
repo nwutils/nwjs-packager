@@ -1,0 +1,19 @@
+{
+  "name": "nwjs-packager",
+  "version": "1.0.0",
+  "description": "Module to build, add packages and release to GitHub NW.js apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charlielee/nwjs-packager.git"
+  },
+  "author": "Charlie Lee",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/charlielee/nwjs-packager/issues"
+  },
+  "homepage": "https://github.com/charlielee/nwjs-packager#readme"
+}
