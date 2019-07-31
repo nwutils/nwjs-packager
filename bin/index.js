@@ -1,11 +1,19 @@
 #!/usr/bin/env node
 (function () {
   "use strict";
-  const argv = require("minimist")(process.argv.slice(2));
+  const argv = require("minimist")(process.argv.slice(2), {
+    string: ["platforms", "version", "buildDir", "cacheDir"],
+    boolean: ["run", "forceDownload", "quiet"],
+    alias: {"p": "platforms", "v": "version", "r": "run", "o": "buildDir", "f": "forceDownload" }
+  });
   const NwPackager = require("./NwPackager");
 
+  // Run the packager if run from cli
   if (require.main === module) {
-    // Run the packager if run from cli
+    // Convert platforms string to array
+    if ("platforms" in argv) {
+      argv.platforms = argv.platforms.split(",");
+    }
     const nwp = new NwPackager(argv);
 
     console.log("Welcome to nwjs-packager, nw-builder with added package creation!");
