@@ -44,7 +44,7 @@
             "zip": false,
           },
         },
-        "mac": {
+        "osx": {
           "packages": {
             "directory": false,
             "pkg": true,
@@ -53,7 +53,7 @@
             "zip": true,
           },
         },
-        "windows": {
+        "win": {
           "packages": {
             "directory": false,
             "inno_setup": true,
@@ -69,57 +69,84 @@
     }
 
     /**
-     * Builds and packages an application
+     * Builds an application with nw-builder
+     * @param {Boolean} skip Set to true to skip the building step and just package (default: false).
      * @return {Promise}
      */
-    build() {
+    build(skip = false) {
+      const self = this;
+      return new Promise((resolve, reject) => {
+        if (!skip) {
+          // Build app using nw-builder
+          console.log("Building app with nw-builder...");
+          self.NwBuilder.build().then(() => {
+            resolve();
+          }).catch((error) => {
+            reject(error);
+          })
+        } else {
+          resolve();
+        }
+      });
+    }
+
+    /**
+     * Packages an application.
+     * @return {Promise}
+     */
+    package() {
       const self = this;
       return new Promise((resolve, reject) => {
         // Build app using nw-builder
-        console.log("Building app with nw-builder...");
-        self.NwBuilder.build().then(() => {
-          // The list of promises to resolve
-          const promisesList = [];
+        console.log("Packaging app...");
+        // The list of promises to resolve
+        const promisesList = [];
 
-          // Loop through each platform
-          self.NwBuilder.options.platforms.forEach(function (platform) {
-            // The folder containing the build
-            console.log(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
-            const BUILD_DIR = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
+        // Loop through each platform
+        self.NwBuilder.options.platforms.forEach(function (platform) {
+          // Platform with architecture
+          const curOs = platform.replace(/[0-9]/g, "");
+          // The folder containing the build
+          const curOutputDir = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
 
-            // *** Add each pre-packaging action promise ***
-            // Add .desktop file
-            if (platform === "linux32" || platform === "linux64" && self.packageOptions.linux.pre.desktop_file) {
-              promisesList.push(self._pre(BUILD_DIR, "desktop_file"));
+          // *** Add each pre-packaging action promise ***
+          // Add .desktop file
+          if (curOs === "linux" && self.packageOptions.linux.pre.desktop_file) {
+            promisesList.push(self._pre(curOutputDir, "desktop_file"));
+          }
+
+          // *** Add each packaging promise ***
+          for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs])) {
+            if (isEnabled) {
+              const inputDir = path.join(self.NwBuilder.options.buildDir, platform);
+              const packageDir = path.join(self.NwBuilder.options.buildDir, getPackageName(platform));
+              promisesList.push(CreatePackage.make(packageType, inputDir, packageDir));
             }
+          }
+        });
 
-            // *** Add each packaging promise ***
-            // todo
-          });
-
-          // *** Resolve all of the promises ***
-          Promise.all(promisesList).then(function () {
-            resolve();
-          }).catch(function (error) {
-            reject(error);
-          });
-        }).catch((error) => {
+        // *** Resolve all of the promises ***
+        Promise.all(promisesList).then(function () {
+          resolve();
+        }).catch(function (error) {
           reject(error);
         });
+      }).catch((error) => {
+        reject(error);
       });
     }
 
     /**
      * Performs an action on a build before packaging.
-     * @param {String} buildDir The directory of the build.
+     * @param {String} curOutputDir The directory of the build.
      * @param {String} preType The action to perform (eg add .desktop file for Linux).
      * @return {Promise}
      */
-    _pre(buildDir, preType) {
+    _pre(curOutputDir, preType) {
       return new Promise((resolve, reject) => {
         switch (preType) {
           case "desktop_file":
-            PreActions.makeDesktopFile(this, buildDir).then(() => {
+            PreActions.makeDesktopFile(this, curOutputDir).then(() => {
               resolve();
             }).catch((error) => {
               reject(error);
@@ -144,7 +171,7 @@
      * @param {String} platform The name of the current platform.
      * @return {String} The converted package name string.
      */
-    _getPackageName(platform) {
+    getPackageName(platform) {
       let output = this.packageOptions.package_name;
       output = output.replace("%a%", this.NwBuilder.options.appName);
       output = output.replace("%v%", this.NwBuilder.options.appVersion);
