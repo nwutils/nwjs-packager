@@ -17,40 +17,54 @@
       const buildOptions = {};
       buildOptions.files = path.join(process.cwd(), "**");
       buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
+      // Combine default and user nw-builder options
+      Object.assign(buildOptions, userBuildOptions);
+
+      // Set buildType to "default" regardless of user preference for consistency
+      buildOptions.buildType = "default";
+
+      this.NwBuilder = new NwBuilder(buildOptions);
+      this.NwBuilder.on("log", console.log);
 
       // Set the default package options
       const packageOptions = {
         // %p% is a special symbol that gets replaced with the os name and architecture
+        "appName": "app",
+        "appVersion": "1.0.0",
         "package_name": "app-%p%",
         "linux": {
-          ".desktop_file": true,
-          "directory": false,
-          "deb": true,
-          "rpm": false,
-          "tar": false,
-          "tar.gz": true,
-          "zip": false,
+          "pre": {
+            "desktop_file": true,
+          },
+          "packages": {
+            "directory": false,
+            "deb": true,
+            "rpm": false,
+            "tar": false,
+            "tar.gz": true,
+            "zip": false,
+          },
         },
         "mac": {
-          "directory": false,
-          "pkg": true,
-          "tar": false,
-          "tar.gz": false,
-          "zip": true,
+          "packages": {
+            "directory": false,
+            "pkg": true,
+            "tar": false,
+            "tar.gz": false,
+            "zip": true,
+          },
         },
         "windows": {
-          "directory": false,
-          "inno_setup": true,
-          "tar": false,
-          "tar.gz": false,
-          "zip": true,
+          "packages": {
+            "directory": false,
+            "inno_setup": true,
+            "tar": false,
+            "tar.gz": false,
+            "zip": true,
+          },
         },
       };
-
-      // Combine defaults with user's options
-      Object.assign(buildOptions, userBuildOptions);
-      this.NwBuilder = new NwBuilder(buildOptions);
-      this.buildOptions = buildOptions;
+      // Combine default and user package options
       Object.assign(packageOptions, userPackageOptions);
       this.packageOptions = packageOptions;
     }
@@ -60,13 +74,69 @@
      * @return {Promise}
      */
     build() {
+      let self = this;
       return new Promise((resolve, reject) => {
-        this.NwBuilder.build().then(function () {
+        // The list of promises to resolve
+        const promisesList = [];
+
+        // Build app using nw-builder
+        console.log("Building app with nw-builder...");
+        promisesList.push(self.NwBuilder.build());
+
+        // Loop through each platform
+        self.NwBuilder.options.platforms.forEach(function (platform) {
+          // The folder containing the build
+          const BUILD_DIR = path.join(self.NwBuilder.options.buildDir, self.packageOptions.appName, platform);
+
+          // *** Add each pre-packaging action promise ***
+          // Add .desktop file
+          if (platform === "linux32" || platform === "linux64" && self.packageOptions.linux.pre.desktop_file) {
+            promisesList.push(self._pre(BUILD_DIR, desktop_file));
+          }
+
+          // *** Add each packaging promise ***
+          // todo
+        });
+
+        // *** Resolve all of the promises ***
+        Promise.all(promisesList).then(function () {
           resolve();
         }).catch(function (error) {
           reject(error);
         });
       });
+    }
+
+    /**
+     * Performs an action on a build before packaging.
+     * @param {String} buildDir The directory of the build.
+     * @param {String} preType The action to perform (eg add .desktop file for Linux).
+     * @return {Promise}
+     */
+    _pre(buildDir, preType) {
+      return new Promise((resolve, reject) => {
+        try {
+          switch (preType) {
+            case "desktop_file":
+              PreActions.makeDesktopFile(this, buildDir).then(() => {
+                resolve();
+              });
+              break;
+            default:
+              throw Error("Invalid pre action type entered");
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
+    /**
+     * Makes a package of a given type from a directory
+     * @param {*} buildDir The directory of the build.
+     * @param {*} packageType The type of package to create.
+     */
+    _createPackage(buildDir, packageType) {
     }
 
     /**
