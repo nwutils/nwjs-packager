@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "build": "babel ./src -d ./lib",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint ./src",
+    "test": "mocha --require babel-core/register"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "eslint": "^6.1.0",
-    "eslint-config-google": "^0.13.0"
+    "eslint-config-google": "^0.13.0",
+    "mocha": "^6.2.0"
   }
 }
