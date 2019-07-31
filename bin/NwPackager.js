@@ -30,7 +30,7 @@
       // Set the default package options
       const packageOptions = {
         // %p% is a special symbol that gets replaced with the os name and architecture
-        "package_name": "%a%-%p%",
+        "package_name": "%a%-%v%-%p%",
         "linux": {
           "pre": {
             "desktop_file": true,
@@ -73,7 +73,7 @@
      * @return {Promise}
      */
     build() {
-      let self = this;
+      const self = this;
       return new Promise((resolve, reject) => {
         // Build app using nw-builder
         console.log("Building app with nw-builder...");
@@ -137,6 +137,19 @@
      * @param {*} packageType The type of package to create.
      */
     _createPackage(buildDir, packageType) {
+    }
+
+    /**
+     * Converts templates from package_name to output string..
+     * @param {String} platform The name of the current platform.
+     * @return {String} The converted package name string.
+     */
+    _getPackageName(platform) {
+      let output = this.packageOptions.package_name;
+      output = output.replace("%a%", this.NwBuilder.options.appName);
+      output = output.replace("%v%", this.NwBuilder.options.appVersion);
+      output = output.replace("%p%", platform);
+      return output;
     }
 
     /**
