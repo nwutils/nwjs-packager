@@ -69,6 +69,7 @@
 
         archive.pipe(output);
 
+        // Append files from a sub-directory, putting its contents at the root of archive
         archive.directory(inputDir, "/").finalize();
       });
     }
