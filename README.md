@@ -11,7 +11,7 @@ Build your NW.js app and generate archives, packages, setup files and more! Apps
 * All platforms: `.zip` or `.tar.gz`
 * TODO: Linux: `.deb` or `.rpm`
 * TODO: macOS: `.pkg`
-* TODO: Windows: `.exe` (using [Inno Setup](http://www.jrsoftware.org/isinfo.php))
+* Windows: `.exe` (using [Inno Setup](http://www.jrsoftware.org/isinfo.php))
 
 ## Installation
 
