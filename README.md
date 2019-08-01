@@ -43,7 +43,6 @@ nwp.build().then(() => {
 
 This object takes all of the options accepted by [nw-builder](https://github.com/nwjs-community/nw-builder) with a few differences:
 
-* `buildDir` and `cacheDir` path names must not start with `./` (ie use `cache` instead of `./cache`)
 * `buildType` - the value of this is ignored and always set to `"default"`
 * `platforms` - this must use "os-architecture" values rather than their shorthands (ie use `win32` instead of just `win`) 
 
@@ -69,6 +68,9 @@ const packageOptions = {
   // The file name format of output packages. Can use the special symbols %a%, %v% %p%
   // which are replaced with the nw-builder appName, appVersion and platform (eg osx64) respectively
   "package_name": "%a%-%v%-%p%",
+  // Only build for the current OS (regardless of the value of buildOptions.platforms)
+  // Reccommended for best results
+  "build_current_os_only": true,
   "linux": {
     "pre": {
       "desktop_file": true, // Toggles generating a Linux .desktop file

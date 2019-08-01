@@ -15,30 +15,11 @@
      * @param {Object} userPackageOptions The packaging options to use.
      */
     constructor(buildOptions = {}, userPackageOptions = {}) {
-      // Set additional default nw-builder options
-      if (!buildOptions.files) {
-        // Take all files in current directory
-        buildOptions.files = [
-          path.join(process.cwd(), "**"),
-          `!${buildOptions.buildDir ? buildOptions.buildDir : path.join(process.cwd(), "build", "**")}`,
-          `!${buildOptions.cacheDir ? buildOptions.cacheDir : path.join(process.cwd(), "cache", "**")}`,
-        ];
-      }
-      if (!buildOptions.platforms || buildOptions.platforms[0] === "") {
-        // Build current OS x32 and x64 variants
-        buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
-      }
-
-      // Set buildType to "default" regardless of user preference as nwjs-packager controls the package name
-      buildOptions.buildType = "default";
-
-      this.NwBuilder = new NwBuilder(buildOptions);
-      this.NwBuilder.on("log", console.log);
-
       // Set the default package options
       const packageOptions = {
         // %p% is a special symbol that gets replaced with the os name and architecture
         "package_name": "%a%-%v%-%p%",
+        "build_current_os_only": true,
         "linux": {
           "pre": {
             "desktop_file": true,
@@ -71,6 +52,28 @@
       // Combine default and user package options
       Object.assign(packageOptions, userPackageOptions);
       this.packageOptions = packageOptions;
+
+      // Set additional default nw-builder options
+      if (!buildOptions.files) {
+        // Take all files in current directory
+        buildOptions.files = [
+          path.join(process.cwd(), "**"),
+          `!${buildOptions.buildDir ? buildOptions.buildDir : path.join(process.cwd(), "build", "**")}`,
+          `!${buildOptions.cacheDir ? buildOptions.cacheDir : path.join(process.cwd(), "cache", "**")}`,
+        ];
+        buildOptions.files.forEach(function (file, i) {
+          buildOptions.files[i] = path.normalize(file);
+        });
+      }
+      if (!buildOptions.platforms || buildOptions.platforms[0] === "" || packageOptions.build_current_os_only) {
+        // Build current OS x32 and x64 variants
+        buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
+      }
+      // Set buildType to "default" regardless of user preference as nwjs-packager controls the package name
+      buildOptions.buildType = "default";
+
+      this.NwBuilder = new NwBuilder(buildOptions);
+      this.NwBuilder.on("log", console.log);
     }
 
     /**
