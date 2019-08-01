@@ -109,6 +109,9 @@
               });
             }
           });
+        } else {
+          console.log("  [!win32] Must be on win32 to build Inno Setup exe");
+          resolve();
         }
       });
     }

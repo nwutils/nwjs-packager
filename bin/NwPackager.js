@@ -86,7 +86,7 @@
           resolve();
         }).catch((error) => {
           reject(error);
-        })
+        });
       });
     }
 
