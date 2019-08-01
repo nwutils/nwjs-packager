@@ -3,6 +3,7 @@
   const archiver = require("archiver");
   const exec = require("child_process").exec;
   const fs = require("fs");
+  const path = require("path");
 
   /**
    * Class for package creation.
