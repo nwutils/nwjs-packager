@@ -3,8 +3,8 @@
   "use strict";
   const argv = require("minimist")(process.argv.slice(2), {
     string: ["platforms", "version", "buildDir", "cacheDir"],
-    boolean: ["run", "forceDownload", "quiet", "skipBuild"],
-    alias: {"p": "platforms", "v": "version", "r": "run", "o": "buildDir", "f": "forceDownload", "s": "skipBuild" }
+    boolean: ["run", "forceDownload", "quiet"],
+    alias: {"p": "platforms", "v": "version", "r": "run", "o": "buildDir", "f": "forceDownload", "s": "skipBuild"},
   });
   const NwPackager = require("./NwPackager");
 
@@ -17,10 +17,11 @@
     const nwp = new NwPackager(argv);
 
     console.log("Welcome to nwjs-packager, nw-builder with added package creation!");
-    nwp.build(argv.skipBuild).then(function () {
-      nwp.package();
+    nwp.build().then(() => {
+      return nwp.package();
+    }).then(() => {
       console.log("Finished!");
-    }).catch(function (error) {
+    }).catch((error) => {
       console.error(error);
     });
   } else {

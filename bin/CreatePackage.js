@@ -1,6 +1,7 @@
 (function () {
   "use strict";
   const archiver = require("archiver");
+  const fs = require("fs");
 
   /**
    * Class for package creation.
@@ -22,6 +23,7 @@
           case "pkg":
           case "inno_setup":
             // todo
+            console.log(`  ${packageType} support coming soon!`);
             return resolve();
           // Handle archives
           case "tar":
@@ -42,6 +44,7 @@
      * @return {Promise}
      */
     static makeArchive(format, inputDir, packageDir) {
+      console.log(`  Package ${inputDir} into ${format}...`);
       return new Promise((resolve, reject) => {
         // Add archive file extension to package dir
         const output = fs.createWriteStream(`${packageDir}.${format}`);
@@ -57,7 +60,6 @@
         }
 
         output.on("close", function () {
-          console.log(`archiver: Compress ${inputDir} to ${format}`);
           resolve();
         });
 
