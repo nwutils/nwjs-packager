@@ -32,7 +32,7 @@ nwp.build().then(() => {
   return nwp.package();
 }).then(() => {
   console.log("Finished!");
-}.catch((error) => {
+}).catch((error) => {
   console.error(error);
 });
 ```
