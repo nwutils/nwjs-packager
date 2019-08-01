@@ -5,6 +5,7 @@ Build your NW.js app and generate archives, packages, setup files and more! Apps
 ### Pre-packaging features
 
 * Auto generate `.desktop` files for Linux
+* TODO: Auto generate `.iss` file for Inno Setup
 * TODO: Copy source files and run `npm install --production`
 
 ### Available outputs
