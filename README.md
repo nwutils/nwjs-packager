@@ -88,11 +88,8 @@ const packageOptions = {
     },
   },
   "win": {
-    "pre": {
-      "inno_setup_file": false // Set to the location of a .iss file to use with Inno Setup 
-    }
     "packages": {
-      "inno_setup": true, // Toggles generating a .exe setup file with Inno Setup
+      "inno_setup": false, // Set to the location of a .iss file to use with Inno Setup 5
       "tar": false,
       "tar.gz": false,
       "zip": true,

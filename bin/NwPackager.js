@@ -60,11 +60,8 @@
           },
         },
         "win": {
-          "pre": {
-            "inno_setup_file": false,
-          },
           "packages": {
-            "inno_setup": true,
+            "inno_setup": false,
             "tar": false,
             "tar.gz": false,
             "zip": true,
@@ -127,7 +124,7 @@
               const outputDir = self.NwBuilder.options.buildDir;
               // The name to give the package
               const packageName = self.renderPackageTemplates(platform);
-              promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName));
+              promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName, self));
             }
           }
         });
