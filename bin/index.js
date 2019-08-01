@@ -4,7 +4,7 @@
   const argv = require("minimist")(process.argv.slice(2), {
     string: ["platforms", "version", "buildDir", "cacheDir"],
     boolean: ["run", "forceDownload", "quiet"],
-    alias: {"p": "platforms", "v": "version", "r": "run", "o": "buildDir", "f": "forceDownload", "s": "skipBuild"},
+    alias: { "p": "platforms", "v": "version", "r": "run", "o": "buildDir", "f": "forceDownload", "s": "skipBuild" },
   });
   const NwPackager = require("./NwPackager");
 
@@ -16,14 +16,22 @@
     }
     const nwp = new NwPackager(argv);
 
-    console.log("Welcome to nwjs-packager, nw-builder with added package creation!");
-    nwp.build().then(() => {
-      return nwp.package();
-    }).then(() => {
-      console.log("Finished!");
-    }).catch((error) => {
-      console.error(error);
-    });
+    if (argv.run) {
+      // Run the app without packaging
+      nwp.run();
+    } else {
+      // Build and package app
+      console.log("Welcome to nwjs-packager, nw-builder with added package creation!");
+      nwp.build().then(() => {
+        return nwp.package();
+      }).then(() => {
+        console.log("Finished!");
+      }).catch((error) => {
+        console.error(error);
+      });
+    }
+
+
   } else {
     // Required as a module
     module.exports = NwPackager;

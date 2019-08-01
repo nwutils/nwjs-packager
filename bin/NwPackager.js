@@ -69,11 +69,23 @@
         // Build current OS x32 and x64 variants
         buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
       }
+
       // Set buildType to "default" regardless of user preference as nwjs-packager controls the package name
       buildOptions.buildType = "default";
 
       this.NwBuilder = new NwBuilder(buildOptions);
       this.NwBuilder.on("log", console.log);
+    }
+
+    /**
+     * Run the application with nw-builder (without building/packaging).
+     */
+    run() {
+      this.NwBuilder.run().then(function () {
+        console.log("Finished running app");
+      }).catch(function (error) {
+        console.error(error);
+      });
     }
 
     /**
@@ -161,13 +173,13 @@
     static getCurSuitablePlatforms() {
       switch (process.platform) {
         case "darwin":
-          return [osx64];
+          return ["osx64"];
         case "linux":
           return ["linux32", "linux64"];
         case "win32":
           return ["win32", "win64"];
         default:
-          console.log("!Error: platform not supported by NW.js.");
+          console.log("Error: platform not supported by NW.js.");
           return [];
       }
     }
