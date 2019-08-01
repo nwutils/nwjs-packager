@@ -29,7 +29,7 @@
             return resolve();
           // Handle win32 setup exe
           case "inno_setup":
-            return CreatePackage.makeInnoSetupExe(inputDir, outputDir, packageName, nwPackager);
+            return CreatePackage.makeInnoSetupExe(nwPackager);
           // Handle archives
           case "tar":
           case "tar.gz":
@@ -83,11 +83,10 @@
 
     /**
      * Creates an setup exe using Inno Setup 5.
-     * @param {String} packageName Name to give the file (excluding file extension).
      * @param {NwPackager} nwp The NwPackager instance.
      * @return {Promise}
      */
-    static makeInnoSetupExe(packageName, nwp) {
+    static makeInnoSetupExe(nwp) {
       return new Promise((resolve, reject) => {
         if (process.platform === "win32") {
           const setupFile = nwp.packageOptions.win.packages.inno_setup;
