@@ -17,7 +17,6 @@
     static make(packageType, inputDir, packageDir) {
       return new Promise((resolve, reject) => {
         switch (packageType) {
-          case "directory":
           case "deb":
           case "rpm":
           case "pkg":

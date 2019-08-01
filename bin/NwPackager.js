@@ -44,7 +44,6 @@
             "desktop_file": true,
           },
           "packages": {
-            "directory": false,
             "deb": true,
             "rpm": false,
             "tar": false,
@@ -54,7 +53,6 @@
         },
         "osx": {
           "packages": {
-            "directory": false,
             "pkg": true,
             "tar": false,
             "tar.gz": false,
@@ -62,8 +60,10 @@
           },
         },
         "win": {
+          "pre": {
+            "inno_setup_file": false,
+          },
           "packages": {
-            "directory": false,
             "inno_setup": true,
             "tar": false,
             "tar.gz": false,
@@ -123,7 +123,7 @@
           // *** Add each packaging promise ***
           for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs].packages)) {
             if (isEnabled) {
-              const packageDir = path.join(self.NwBuilder.options.buildDir, self.getPackageName(platform));
+              const packageDir = path.join(self.NwBuilder.options.buildDir, self.renderPackageTemplates(platform));
               promisesList.push(CreatePackage.make(packageType, curOutputDir, packageDir));
             }
           }
@@ -143,7 +143,7 @@
      * @param {String} platform The name of the current platform.
      * @return {String} The converted package name string.
      */
-    getPackageName(platform) {
+    renderPackageTemplates(platform) {
       let output = this.packageOptions.package_name;
       output = output.replace("%a%", this.NwBuilder.options.appName);
       output = output.replace("%v%", this.NwBuilder.options.appVersion);
