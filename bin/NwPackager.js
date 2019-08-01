@@ -1,5 +1,6 @@
 (function () {
   "use strict";
+  const CreatePackage = require("./CreatePackage");
   const NwBuilder = require("nw-builder");
   const path = require("path");
   const PreActions = require("./PreActions");
@@ -10,22 +11,31 @@
   class NwPackager {
     /**
      * Creates a new NwPackager instance
-     * @param {Object} userBuildOptions The NwBuilder options to use.
+     * @param {Object} buildOptions The NwBuilder options to use.
      * @param {Object} userPackageOptions The packaging options to use.
      */
-    constructor(userBuildOptions = {}, userPackageOptions = {}) {
+    constructor(buildOptions = {}, userPackageOptions = {}) {
       // Set additional default nw-builder options
-      const buildOptions = {};
-      buildOptions.files = path.join(process.cwd(), "**");
-      buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
-      // Combine default and user nw-builder options
-      Object.assign(buildOptions, userBuildOptions);
+      if (!buildOptions.files) {
+        // Take all files in current directory
+        buildOptions.files = [
+          path.join(process.cwd(), "**"),
+          `!${buildOptions.buildDir ? buildOptions.buildDir : path.join(process.cwd(), "build", "**")}`,
+          `!${buildOptions.cacheDir ? buildOptions.cacheDir : path.join(process.cwd(), "cache", "**")}`,
+          // `!node_modules/**`,
+        ];
+        console.log(buildOptions.files);
+      }
+      if (!buildOptions.platforms || buildOptions.platforms[0] === "") {
+        // Build current OS x32 and x64 variants
+        buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
+      }
 
       // Set buildType to "default" regardless of user preference as nwjs-packager controls the package name
       buildOptions.buildType = "default";
 
       this.NwBuilder = new NwBuilder(buildOptions);
-      // this.NwBuilder.on("log", console.log);
+      this.NwBuilder.on("log", console.log);
 
       // Set the default package options
       const packageOptions = {
@@ -70,23 +80,18 @@
 
     /**
      * Builds an application with nw-builder
-     * @param {Boolean} skip Set to true to skip the building step and just package (default: false).
      * @return {Promise}
      */
-    build(skip = false) {
+    build() {
       const self = this;
       return new Promise((resolve, reject) => {
-        if (!skip) {
-          // Build app using nw-builder
-          console.log("Building app with nw-builder...");
-          self.NwBuilder.build().then(() => {
-            resolve();
-          }).catch((error) => {
-            reject(error);
-          })
-        } else {
+        // Build app using nw-builder
+        console.log("Building app with nw-builder...");
+        self.NwBuilder.build().then(() => {
           resolve();
-        }
+        }).catch((error) => {
+          reject(error);
+        })
       });
     }
 
@@ -97,7 +102,6 @@
     package() {
       const self = this;
       return new Promise((resolve, reject) => {
-        // Build app using nw-builder
         console.log("Packaging app...");
         // The list of promises to resolve
         const promisesList = [];
@@ -116,10 +120,10 @@
           }
 
           // *** Add each packaging promise ***
-          for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs])) {
+          for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs].packages)) {
             if (isEnabled) {
-              const inputDir = path.join(self.NwBuilder.options.buildDir, platform);
-              const packageDir = path.join(self.NwBuilder.options.buildDir, getPackageName(platform));
+              const inputDir = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
+              const packageDir = path.join(self.NwBuilder.options.buildDir, self.getPackageName(platform));
               promisesList.push(CreatePackage.make(packageType, inputDir, packageDir));
             }
           }
@@ -131,8 +135,6 @@
         }).catch(function (error) {
           reject(error);
         });
-      }).catch((error) => {
-        reject(error);
       });
     }
 
@@ -156,14 +158,6 @@
             reject(Error("Invalid pre action type entered"));
         }
       });
-    }
-
-    /**
-     * Makes a package of a given type from a directory
-     * @param {*} buildDir The directory of the build.
-     * @param {*} packageType The type of package to create.
-     */
-    _createPackage(buildDir, packageType) {
     }
 
     /**
