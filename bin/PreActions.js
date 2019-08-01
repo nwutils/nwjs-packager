@@ -19,6 +19,10 @@
         switch (preType) {
           case "desktop_file":
             return PreActions.makeDesktopFile(nwPackager, outputDir);
+          case "inno_setup_file":
+            // todo
+            console.log(`  ${preType} support coming soon!`);
+            return resolve();
           default:
             reject(Error("Invalid pre action type entered"));
         }
@@ -32,7 +36,7 @@
      * @return {Promise}
      */
     static makeDesktopFile(nwp, outputDir) {
-      console.log(`Making .desktop file in ${outputDir}`);
+      console.log(`  Making .desktop file in ${outputDir}`);
       return new Promise((resolve, reject) => {
         const filePath = path.join(outputDir, `${nwp.NwBuilder.options.appName}.desktop`);
         const fileContents =
