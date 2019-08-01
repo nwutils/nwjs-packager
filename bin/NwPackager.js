@@ -22,9 +22,7 @@
           path.join(process.cwd(), "**"),
           `!${buildOptions.buildDir ? buildOptions.buildDir : path.join(process.cwd(), "build", "**")}`,
           `!${buildOptions.cacheDir ? buildOptions.cacheDir : path.join(process.cwd(), "cache", "**")}`,
-          // `!node_modules/**`,
         ];
-        console.log(buildOptions.files);
       }
       if (!buildOptions.platforms || buildOptions.platforms[0] === "") {
         // Build current OS x32 and x64 variants
@@ -114,17 +112,19 @@
           const curOutputDir = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
 
           // *** Add each pre-packaging action promise ***
-          // Add .desktop file
-          if (curOs === "linux" && self.packageOptions.linux.pre.desktop_file) {
-            promisesList.push(self._pre(curOutputDir, "desktop_file"));
+          if ("pre" in self.packageOptions[curOs]) {
+            for (const [preType, isEnabled] of Object.entries(self.packageOptions[curOs].pre)) {
+              if (isEnabled) {
+                promisesList.push(PreActions.run(preType, curOutputDir, self));
+              }
+            }
           }
 
           // *** Add each packaging promise ***
           for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs].packages)) {
             if (isEnabled) {
-              const inputDir = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
               const packageDir = path.join(self.NwBuilder.options.buildDir, self.getPackageName(platform));
-              promisesList.push(CreatePackage.make(packageType, inputDir, packageDir));
+              promisesList.push(CreatePackage.make(packageType, curOutputDir, packageDir));
             }
           }
         });
@@ -135,28 +135,6 @@
         }).catch(function (error) {
           reject(error);
         });
-      });
-    }
-
-    /**
-     * Performs an action on a build before packaging.
-     * @param {String} curOutputDir The directory of the build.
-     * @param {String} preType The action to perform (eg add .desktop file for Linux).
-     * @return {Promise}
-     */
-    _pre(curOutputDir, preType) {
-      return new Promise((resolve, reject) => {
-        switch (preType) {
-          case "desktop_file":
-            PreActions.makeDesktopFile(this, curOutputDir).then(() => {
-              resolve();
-            }).catch((error) => {
-              reject(error);
-            });
-            break;
-          default:
-            reject(Error("Invalid pre action type entered"));
-        }
       });
     }
 
