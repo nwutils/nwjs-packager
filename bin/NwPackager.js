@@ -109,13 +109,13 @@
           // Platform with architecture
           const curOs = platform.replace(/[0-9]/g, "");
           // The folder containing the build
-          const curOutputDir = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
+          const inputDir = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
 
           // *** Add each pre-packaging action promise ***
           if ("pre" in self.packageOptions[curOs]) {
             for (const [preType, isEnabled] of Object.entries(self.packageOptions[curOs].pre)) {
               if (isEnabled) {
-                promisesList.push(PreActions.run(preType, curOutputDir, self));
+                promisesList.push(PreActions.run(preType, inputDir, self));
               }
             }
           }
@@ -123,8 +123,11 @@
           // *** Add each packaging promise ***
           for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs].packages)) {
             if (isEnabled) {
-              const packageDir = path.join(self.NwBuilder.options.buildDir, self.renderPackageTemplates(platform));
-              promisesList.push(CreatePackage.make(packageType, curOutputDir, packageDir));
+              // The folder to output the package to
+              const outputDir = self.NwBuilder.options.buildDir;
+              // The name to give the package
+              const packageName = self.renderPackageTemplates(platform);
+              promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName));
             }
           }
         });

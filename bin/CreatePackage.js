@@ -9,12 +9,13 @@
   class CreatePackage {
     /**
      * Creates a package of a given type.
-     * @param {*} packageType The type of package to build.
-     * @param {*} inputDir Location of directory to compress.
-     * @param {*} packageDir Location and name of output.
+     * @param {String} packageType The type of package to build.
+     * @param {String} inputDir Location of directory to package.
+     * @param {String} outputDir Location to output package.
+     * @param {String} packageName Name to give the package (excluding file extension).
      * @return {Promise}
      */
-    static make(packageType, inputDir, packageDir) {
+    static make(packageType, inputDir, outputDir, packageName) {
       return new Promise((resolve, reject) => {
         switch (packageType) {
           case "deb":
@@ -28,7 +29,7 @@
           case "tar":
           case "tar.gz":
           case "zip":
-            return CreatePackage.makeArchive(packageType, inputDir, packageDir);
+            return CreatePackage.makeArchive(packageType, inputDir, outputDir, packageName);
           default:
             reject(Error(`Unknown package type: "${packageType}"`));
         }
@@ -37,16 +38,18 @@
 
     /**
      * Create a compressed archive from a directory.
-     * @param {*} format Format to compress to (eg ZIP or TAR).
-     * @param {*} inputDir Location of directory to compress.
-     * @param {*} packageDir Location and name of output.
+     * @param {String} format Format to compress to (eg ZIP or TAR).
+     * @param {String} inputDir Location of directory to compress.
+     * @param {String} outputDir Location to output compressed archive.
+     * @param {String} packageName Name of compressed archive (excluding file extension).
      * @return {Promise}
      */
-    static makeArchive(format, inputDir, packageDir) {
+    static makeArchive(format, inputDir, outputDir, packageName) {
       console.log(`  Package ${inputDir} into ${format}...`);
       return new Promise((resolve, reject) => {
         // Add archive file extension to package dir
-        const output = fs.createWriteStream(`${packageDir}.${format}`);
+        const outputPath = path.join(outputDir, `${packageName}.${format}`);
+        const output = fs.createWriteStream(outputPath);
 
         // Work with tar.gz
         let archive;
