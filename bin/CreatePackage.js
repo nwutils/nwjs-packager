@@ -50,7 +50,7 @@
      * @return {Promise}
      */
     static makeArchive(format, inputDir, outputDir, packageName) {
-      console.log(`  Package ${inputDir} into ${format}...`);
+      console.log(`  Package ${inputDir} into ${format}`);
       return new Promise((resolve, reject) => {
         // Add archive file extension to package dir
         const outputPath = path.join(outputDir, `${packageName}.${format}`);
@@ -87,6 +87,7 @@
      * @return {Promise}
      */
     static makeInnoSetupExe(nwp) {
+      // todo make sure only one file generated
       return new Promise((resolve, reject) => {
         if (process.platform === "win32") {
           const setupFile = nwp.packageOptions.win.packages.inno_setup;
@@ -98,6 +99,7 @@
               reject(Error("Please install Inno Setup 5 to create a win32 installer"));
             } else {
               // Run the Inno Setup CLI
+              // todo handle relative setup file paths
               exec(`cd C:/Program Files (x86)/Inno Setup 5/ && ISCC.exe ${setupFile}`, function (error, stdout, stderr) {
                 if (error) {
                   reject(error);
