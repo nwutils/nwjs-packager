@@ -1,6 +1,7 @@
 (function () {
   "use strict";
   const archiver = require("archiver");
+  const exec = require("child_process").exec;
   const fs = require("fs");
 
   /**
@@ -13,18 +14,21 @@
      * @param {String} inputDir Location of directory to package.
      * @param {String} outputDir Location to output package.
      * @param {String} packageName Name to give the package (excluding file extension).
+     * @param {NwPackager} nwPackager The NwPackager instance.
      * @return {Promise}
      */
-    static make(packageType, inputDir, outputDir, packageName) {
+    static make(packageType, inputDir, outputDir, packageName, nwPackager) {
       return new Promise((resolve, reject) => {
         switch (packageType) {
           case "deb":
           case "rpm":
           case "pkg":
-          case "inno_setup":
             // todo
             console.log(`  ${packageType} support coming soon!`);
             return resolve();
+          // Handle win32 setup exe
+          case "inno_setup":
+            return CreatePackage.makeInnoSetupExe(inputDir, outputDir, packageName, nwPackager);
           // Handle archives
           case "tar":
           case "tar.gz":
@@ -73,6 +77,39 @@
 
         // Append files from a sub-directory, putting its contents at the root of archive
         archive.directory(inputDir, "/").finalize();
+      });
+    }
+
+    /**
+     * Creates an setup exe using Inno Setup 5.
+     * @param {String} packageName Name to give the file (excluding file extension).
+     * @param {NwPackager} nwp The NwPackager instance.
+     * @return {Promise}
+     */
+    static makeInnoSetupExe(packageName, nwp) {
+      return new Promise((resolve, reject) => {
+        if (process.platform === "win32") {
+          const setupFile = nwp.packageOptions.win.packages.inno_setup;
+          console.log(`  [win32] Create Inno Setup 5 exe from ${setupFile}`);
+
+          // Check Inno Setup is installed
+          fs.open("C:/Program Files (x86)/Inno Setup 5", "r", function (err, fd) {
+            if (err) {
+              reject(Error("Please install Inno Setup 5 to create a win32 installer"));
+            } else {
+              // Run the Inno Setup CLI
+              exec(`cd C:/Program Files (x86)/Inno Setup 5/ && ISCC.exe ${setupFile}`, function (error, stdout, stderr) {
+                if (error) {
+                  reject(error);
+                } else if (stderr) {
+                  reject(stderr);
+                } else {
+                  resolve();
+                }
+              });
+            }
+          });
+        }
       });
     }
   }
