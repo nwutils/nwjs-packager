@@ -77,7 +77,7 @@
       return new Promise((resolve, reject) => {
         // Can only build Inno Setup on Windows
         if (process.platform === "win32") {
-          const setupFile = "";
+          let setupFile = "";
           // Determine setup file location
           if (self.useOsSettings) {
             setupFile = self.nwp["packageOptions"]["win"]["packages"]["inno_setup"];
