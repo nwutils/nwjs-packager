@@ -14,56 +14,43 @@
      * @param {String} packageType The type of package to build.
      * @param {String} inputDir Location of directory to package.
      * @param {String} outputDir Location to output package.
-     * @param {String} packageName Name to give the package (excluding file extension).
+     * @param {String} platform The current platform being built (eg "win32").
      * @param {NwPackager} nwPackager The NwPackager instance.
+     * @param {Boolean} useOsSettings Determines whether to use the OS packageOptions (eg pO.win) or platform packageOptions (eg pO.win32).
      * @return {Promise}
      */
-    static make(packageType, inputDir, outputDir, packageName, nwPackager) {
-      return new Promise((resolve, reject) => {
-        switch (packageType) {
-          case "deb":
-          case "rpm":
-          case "pkg":
-            // todo
-            console.log(`  ${packageType} support coming soon!`);
-            return resolve();
-          // Handle win32 setup exe
-          case "inno_setup":
-            return CreatePackage.makeInnoSetupExe(nwPackager);
-          // Handle archives
-          case "tar":
-          case "tar.gz":
-          case "zip":
-            return CreatePackage.makeArchive(packageType, inputDir, outputDir, packageName);
-          default:
-            reject(Error(`Unknown package type: "${packageType}"`));
-        }
-      });
+    constructor(packageType, inputDir, outputDir, platform, nwPackager, useOsSettings = true) {
+      this.packageType = packageType;
+      this.inputDir = inputDir;
+      this.outputDir = outputDir;
+      this.platform = platform;
+      this.nwp = nwPackager;
+      this.useOsSettings = useOsSettings;
+      // The name to give the package (excluding file extension)
+      this.packageName = this.nwp.renderPackageTemplates(platform);
     }
 
     /**
      * Create a compressed archive from a directory.
-     * @param {String} format Format to compress to (eg ZIP or TAR).
-     * @param {String} inputDir Location of directory to compress.
-     * @param {String} outputDir Location to output compressed archive.
-     * @param {String} packageName Name of compressed archive (excluding file extension).
      * @return {Promise}
      */
-    static makeArchive(format, inputDir, outputDir, packageName) {
-      console.log(`  Package ${inputDir} into ${format}`);
+    makeArchive() {
+      const self = this;
       return new Promise((resolve, reject) => {
+        console.log(`  Package ${self.inputDir} into ${self.packageType}`);
+
         // Add archive file extension to package dir
-        const outputPath = path.join(outputDir, `${packageName}.${format}`);
+        const outputPath = path.join(self.outputDir, `${self.packageName}.${self.packageType}`);
         const output = fs.createWriteStream(outputPath);
 
         // Work with tar.gz
         let archive;
-        if (format === "tar.gz") {
+        if (self.packageType === "tar.gz") {
           archive = archiver("tar", {
             gzip: true,
           });
         } else {
-          archive = archiver(format);
+          archive = archiver(self.packageType);
         }
 
         output.on("close", function () {
@@ -77,20 +64,31 @@
         archive.pipe(output);
 
         // Append files from a sub-directory, putting its contents at the root of archive
-        archive.directory(inputDir, "/").finalize();
+        archive.directory(self.inputDir, "/").finalize();
       });
     }
 
     /**
      * Creates an setup exe using Inno Setup 5.
-     * @param {NwPackager} nwp The NwPackager instance.
      * @return {Promise}
      */
-    static makeInnoSetupExe(nwp) {
+    makeInnoSetupExe() {
+      const self = this;
       // todo make sure only one file generated
       return new Promise((resolve, reject) => {
+        // Can only build Inno Setup on Windows
         if (process.platform === "win32") {
-          const setupFile = nwp.packageOptions.win.packages.inno_setup;
+          const setupFile = "";
+          // Determine setup file location
+          if (self.useOsSettings) {
+            setupFile = self.nwp["packageOptions"]["win"]["packages"]["inno_setup"];
+          } else {
+            setupFile = self.nwp["packageOptions"][self.platform]["packages"]["inno_setup"];
+          }
+          // If boolean value rather than file name used, generate the setup file
+          if (setupFile === true) {
+            // todo setupFile = methodToGenerateSetupFile();
+          }
           console.log(`  [win32] Create Inno Setup 5 exe from ${setupFile}`);
 
           // Check Inno Setup is installed
@@ -114,6 +112,40 @@
         } else {
           console.log("  [!win32] Must be on win32 to build Inno Setup exe");
           resolve();
+        }
+      });
+    }
+
+    /**
+     * Creates and runs a package of a given type.
+     * @param {String} packageType The type of package to build.
+     * @param {String} inputDir Location of directory to package.
+     * @param {String} outputDir Location to output package.
+     * @param {String} platform The current platform being built (eg "win32").
+     * @param {NwPackager} nwPackager The NwPackager instance.
+     * @param {Boolean} useOsSettings Determines whether to use the OS packageOptions (eg pO.win) or platform packageOptions (eg pO.win32).
+     * @return {Promise}
+     */
+    static make(packageType, inputDir, outputDir, platform, nwPackager, useOsSettings = true) {
+      return new Promise((resolve, reject) => {
+        const pack = new CreatePackage(packageType, inputDir, outputDir, platform, nwPackager, useOsSettings);
+        switch (packageType) {
+          case "deb":
+          case "rpm":
+          case "pkg":
+            // todo
+            console.log(`  ${packageType} support coming soon!`);
+            return resolve();
+          // Handle win32 setup exe
+          case "inno_setup":
+            return pack.makeInnoSetupExe();
+          // Handle archives
+          case "tar":
+          case "tar.gz":
+          case "zip":
+            return pack.makeArchive();
+          default:
+            reject(Error(`Unknown package type: "${packageType}"`));
         }
       });
     }
