@@ -126,8 +126,7 @@
           // *** Add each pre-packaging action promise ***
 
           // OS options (eg "win")
-          if ("pre" in self.packageOptions[curOs]) {
-            
+          if (curOs in self.packageOptions && "pre" in self.packageOptions[curOs]) {
             for (const [preType, isEnabled] of Object.entries(self.packageOptions[curOs].pre)) {
               if (isEnabled) {
                 promisesList.push(PreActions.run(preType, inputDir, self));
@@ -136,7 +135,7 @@
           }
 
           // OS architecture options (eg "win64")
-          if ("pre" in self.packageOptions[platform]) {
+          if (platform in self.packageOptions && "pre" in self.packageOptions[platform]) {
             for (const [preType, isEnabled] of Object.entries(self.packageOptions[platform].pre)) {
               if (isEnabled) {
                 promisesList.push(PreActions.run(preType, inputDir, self));
@@ -152,7 +151,7 @@
           const packageName = self.renderPackageTemplates(platform);
 
           // OS options (eg "win")
-          if ("packages" in self.packageOptions[curOs]) {
+          if (curOs in self.packageOptions && "packages" in self.packageOptions[curOs]) {
             for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs].packages)) {
               if (isEnabled) {
                 promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName, self));
@@ -161,7 +160,7 @@
           }
 
           // OS architecture options (eg "win64")
-          if ("packages" in self.packageOptions[platform]) {
+          if (platform in self.packageOptions && "packages" in self.packageOptions[platform]) {
             for (const [packageType, isEnabled] of Object.entries(self.packageOptions[platform].packages)) {
               if (isEnabled) {
                 promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName, self));
