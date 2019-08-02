@@ -147,14 +147,12 @@
 
           // The folder to output the package to
           const outputDir = self.NwBuilder.options.buildDir;
-          // The name to give the package
-          const packageName = self.renderPackageTemplates(platform);
 
           // OS options (eg "win")
           if (curOs in self.packageOptions && "packages" in self.packageOptions[curOs]) {
             for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs].packages)) {
               if (isEnabled) {
-                promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName, self));
+                promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, platform, self));
               }
             }
           }
@@ -163,7 +161,7 @@
           if (platform in self.packageOptions && "packages" in self.packageOptions[platform]) {
             for (const [packageType, isEnabled] of Object.entries(self.packageOptions[platform].packages)) {
               if (isEnabled) {
-                promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName, self));
+                promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, platform, self, false));
               }
             }
           }
