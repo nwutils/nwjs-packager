@@ -19,7 +19,7 @@
       const packageOptions = {
         // %p% is a special symbol that gets replaced with the os name and architecture
         "package_name": "%a%-%v%-%p%",
-        "build_current_os_only": true,
+        "build_current_os_only": false,
         "linux": {
           "pre": {
             "desktop_file": true,
@@ -118,13 +118,16 @@
 
         // Loop through each platform
         self.NwBuilder.options.platforms.forEach(function (platform) {
-          // Platform with architecture
+          // Get os from platform name
           const curOs = platform.replace(/[0-9]/g, "");
           // The folder containing the build
           const inputDir = path.join(self.NwBuilder.options.buildDir, self.NwBuilder.options.appName, platform);
 
           // *** Add each pre-packaging action promise ***
+
+          // OS options (eg "win")
           if ("pre" in self.packageOptions[curOs]) {
+            
             for (const [preType, isEnabled] of Object.entries(self.packageOptions[curOs].pre)) {
               if (isEnabled) {
                 promisesList.push(PreActions.run(preType, inputDir, self));
@@ -132,14 +135,37 @@
             }
           }
 
+          // OS architecture options (eg "win64")
+          if ("pre" in self.packageOptions[platform]) {
+            for (const [preType, isEnabled] of Object.entries(self.packageOptions[platform].pre)) {
+              if (isEnabled) {
+                promisesList.push(PreActions.run(preType, inputDir, self));
+              }
+            }
+          }
+
           // *** Add each packaging promise ***
-          for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs].packages)) {
-            if (isEnabled) {
-              // The folder to output the package to
-              const outputDir = self.NwBuilder.options.buildDir;
-              // The name to give the package
-              const packageName = self.renderPackageTemplates(platform);
-              promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName, self));
+
+          // The folder to output the package to
+          const outputDir = self.NwBuilder.options.buildDir;
+          // The name to give the package
+          const packageName = self.renderPackageTemplates(platform);
+
+          // OS options (eg "win")
+          if ("packages" in self.packageOptions[curOs]) {
+            for (const [packageType, isEnabled] of Object.entries(self.packageOptions[curOs].packages)) {
+              if (isEnabled) {
+                promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName, self));
+              }
+            }
+          }
+
+          // OS architecture options (eg "win64")
+          if ("packages" in self.packageOptions[platform]) {
+            for (const [packageType, isEnabled] of Object.entries(self.packageOptions[platform].packages)) {
+              if (isEnabled) {
+                promisesList.push(CreatePackage.make(packageType, inputDir, outputDir, packageName, self));
+              }
             }
           }
         });

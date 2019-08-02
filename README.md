@@ -32,8 +32,6 @@ let nwp = new NwPackager(buildOptions, packageOptions);
 
 nwp.build().then(() => {
   return nwp.package();
-}).then(() => {
-  console.log("Finished!");
 }).catch((error) => {
   console.error(error);
 });
@@ -70,7 +68,7 @@ const packageOptions = {
   "package_name": "%a%-%v%-%p%",
   // Only build for the current OS (regardless of the value of buildOptions.platforms)
   // Reccommended for best results
-  "build_current_os_only": true,
+  "build_current_os_only": false,
   "linux": {
     "pre": {
       "desktop_file": true, // Toggles generating a Linux .desktop file
