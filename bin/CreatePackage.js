@@ -17,7 +17,6 @@
      * @param {String} platform The current platform being built (eg "win32").
      * @param {NwPackager} nwPackager The NwPackager instance.
      * @param {Boolean} useOsSettings Determines whether to use the OS packageOptions (eg pO.win) or platform packageOptions (eg pO.win32).
-     * @return {Promise}
      */
     constructor(packageType, inputDir, outputDir, platform, nwPackager, useOsSettings = true) {
       this.packageType = packageType;
