@@ -59,7 +59,9 @@ const buildOptions = {
 
 ### packageOptions
 
-This object contains nwjs-packager specific settings. The possible values with their default values are listed:
+This object contains nwjs-packager specific settings. Outputs can be specified for an OS (eg `win`) which will affect both the x32 and x64 outputs, or for a specific platform (eg `win64`).
+
+The possible values with their default values are listed:
 
 ```node
 const packageOptions = {
