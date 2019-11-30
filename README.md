@@ -46,6 +46,7 @@ This object takes all of the options accepted by [nw-builder](https://github.com
 
 All default values are also the same except for:
 
+* `cacheDir` - this is set to `~/.nwjs-packager/cache`
 * `platforms` - this is set to the current OS's x32 and x64 variants (eg on Windows this would be `["win32", "win64"]`)
 
 ```node
