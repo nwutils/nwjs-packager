@@ -53,9 +53,17 @@
       Object.assign(packageOptions, userPackageOptions);
       this.packageOptions = packageOptions;
 
-      // Set additional default nw-builder options
+      /*
+       * Set additional default nw-builder options
+       */
+
+      // nwjs-packager specific cache directory
+      if (!buildOptions.cache) {
+        buildOptions.cacheDir = `${require('os').homedir()}/.nwjs-packager/cache`;
+      }
+
+      // Take all files in current directory by default
       if (!buildOptions.files) {
-        // Take all files in current directory
         buildOptions.files = [
           path.join(process.cwd(), "**"),
           `!${buildOptions.buildDir ? buildOptions.buildDir : path.join(process.cwd(), "build", "**")}`,
@@ -65,13 +73,21 @@
           buildOptions.files[i] = path.normalize(file);
         });
       }
+
+      // Build current OS x32 and x64 variants by default
       if (!buildOptions.platforms || buildOptions.platforms[0] === "" || packageOptions.build_current_os_only) {
-        // Build current OS x32 and x64 variants
         buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
       }
 
       // Set buildType to "default" regardless of user preference as nwjs-packager controls the package name
       buildOptions.buildType = "default";
+
+      // Separate the version-flavor string into 2 options
+      if (buildOptions.version && buildOptions.version.includes("-")) {
+        const splitVersion = buildOptions.version.split("-");
+        buildOptions.version = splitVersion[0];
+        buildOptions.flavor = splitVersion[1];
+      }
 
       this.NwBuilder = new NwBuilder(buildOptions);
       this.NwBuilder.on("log", console.log);
