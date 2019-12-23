@@ -103,6 +103,13 @@ const packageOptions = {
 };
 ```
 
+## Example usages
+
+* https://github.com/charlielee/nwjs-packager-demo - a demo NW.js application used for testing.
+* https://github.com/charlielee/boats-animator
+
 ## License
 
-[MIT License](https://en.wikipedia.org/wiki/MIT_License)
+[MIT License](https://en.wikipedia.org/wiki/MIT_License). © 2019 Charlie Lee.
+
+
