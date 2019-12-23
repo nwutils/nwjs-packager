@@ -105,8 +105,8 @@ const packageOptions = {
 
 ## Example usages
 
-* https://github.com/charlielee/nwjs-packager-demo - a demo NW.js application used for testing.
-* https://github.com/charlielee/boats-animator
+* **[nwjs-packager-demo](https://github.com/charlielee/nwjs-packager-demo)** - a demo NW.js application used for testing.
+* **[Boats Animator](https://github.com/charlielee/boats-animator)**
 
 ## License
 
