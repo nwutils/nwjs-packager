@@ -67,7 +67,7 @@
         buildOptions.files = [
           path.join(process.cwd(), "**"),
           `!${buildOptions.buildDir ? buildOptions.buildDir : path.join(process.cwd(), "build", "**")}`,
-          `!${buildOptions.cacheDir ? buildOptions.cacheDir : path.join(process.cwd(), "cache", "**")}`,
+          `!${path.join(process.cwd(), "node_modules", "**")}`
         ];
         buildOptions.files.forEach(function (file, i) {
           buildOptions.files[i] = path.normalize(file);
