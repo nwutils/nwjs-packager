@@ -1,6 +1,9 @@
 (function () {
   "use strict";
   const CreatePackage = require("./CreatePackage");
+  const fs = require('fs');
+  const glob = require("glob");
+  const ncp = require("ncp").ncp;
   const NwBuilder = require("nw-builder");
   const path = require("path");
   const PreActions = require("./PreActions");
@@ -56,48 +59,36 @@
       /*
        * Set additional default nw-builder options
        */
+      this.buildOptions = buildOptions;
 
       // nwjs-packager specific cache directory
-      if (!buildOptions.cache) {
-        buildOptions.cacheDir = `${require('os').homedir()}/.nwjs-packager/cache`;
-      }
-
-      // Take all files in current directory by default
-      if (!buildOptions.files) {
-        buildOptions.files = [
-          path.join(process.cwd(), "**"),
-          `!${buildOptions.buildDir ? buildOptions.buildDir : path.join(process.cwd(), "build", "**")}`,
-          `!${path.join(process.cwd(), "node_modules", "**")}`
-        ];
-        buildOptions.files.forEach(function (file, i) {
-          buildOptions.files[i] = path.normalize(file);
-        });
+      if (!this.buildOptions.cache) {
+        this.buildOptions.cacheDir = `${require('os').homedir()}/.nwjs-packager/cache`;
       }
 
       // Build current OS x32 and x64 variants by default
-      if (!buildOptions.platforms || buildOptions.platforms[0] === "" || packageOptions.build_current_os_only) {
-        buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
+      if (!this.buildOptions.platforms || this.buildOptions.platforms[0] === "" || packageOptions.build_current_os_only) {
+        this.buildOptions.platforms = NwPackager.getCurSuitablePlatforms();
       }
 
       // Set buildType to "default" regardless of user preference as nwjs-packager controls the package name
-      buildOptions.buildType = "default";
+      this.buildOptions.buildType = "default";
 
       // Separate the version-flavor string into 2 options
-      if (buildOptions.version && buildOptions.version.includes("-")) {
-        const splitVersion = buildOptions.version.split("-");
-        buildOptions.version = splitVersion[0];
-        buildOptions.flavor = splitVersion[1];
+      if (this.buildOptions.version && this.buildOptions.version.includes("-")) {
+        const splitVersion = this.buildOptions.version.split("-");
+        this.buildOptions.version = splitVersion[0];
+        this.buildOptions.flavor = splitVersion[1];
       }
-
-      this.NwBuilder = new NwBuilder(buildOptions);
-      this.NwBuilder.on("log", console.log);
     }
 
     /**
      * Run the application with nw-builder (without building/packaging).
      */
     run() {
-      this.NwBuilder.run().then(function () {
+      let nwb = new NwBuilder(this.buildOptions);
+      nwb.on("log", console.log);
+      nwb.run().then(function () {
         console.log("Finished running app");
       }).catch(function (error) {
         console.error(error);
@@ -111,7 +102,14 @@
     build() {
       const self = this;
       return new Promise((resolve, reject) => {
+        // Create temp dir
+        self.tempDir = NwPackager.createTempDir(self.buildOptions.files);
+        self.buildOptions.files = [`${self.tempDir}/**`];
+        console.log(`Created temp directory at ${self.tempDir}`);
+
         // Build app using nw-builder
+        self.NwBuilder = new NwBuilder(self.buildOptions);
+        self.NwBuilder.on("log", console.log);
         console.log("Building app with nw-builder...");
         self.NwBuilder.build().then(() => {
           resolve();
@@ -183,6 +181,18 @@
           }
         });
 
+        // Delete the temporary directory
+        promisesList.push(new Promise((resolve, reject) => {
+          fs.rmdir(self.tempDir, { recursive: true }, (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              console.log(`Removed temp directory at ${self.tempDir}`);
+              resolve();
+            }
+          });
+        }));
+
         // *** Resolve all of the promises ***
         Promise.all(promisesList).then(function () {
           resolve();
@@ -221,6 +231,36 @@
           console.log("Error: platform not supported by NW.js.");
           return [];
       }
+    }
+
+    static createTempDir(files) {
+      // Move all of the selected files into a temporary directory
+      // https://gist.github.com/6174/6062387
+      let tempUuid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      let tempDir = `${require('os').homedir()}/.nwjs-packager/temp/${tempUuid}`;
+
+      // Loop through each selected glob and file
+      files.forEach(function (file, i) {
+        // Normalize the glob
+        files[i] = path.normalize(file);
+
+        // Move each file that matches the glob to the temp dir
+        let matchedFiles = glob.sync(files[i], {});
+        matchedFiles.forEach(function (filePath) {
+          let relativePath = path.relative(process.cwd(), filePath);
+          let newTempPath = `${tempDir}/${relativePath}`;
+
+          // Make directories/files in temp location as appropriate
+          if (fs.lstatSync(relativePath).isDirectory()) {
+            fs.mkdirSync(newTempPath, { recursive: true });
+          } else {
+            fs.mkdirSync(path.dirname(newTempPath), { recursive: true });
+            fs.copyFileSync(filePath, newTempPath);
+          }
+        });
+      });
+
+      return tempDir;
     }
   }
   module.exports = NwPackager;
