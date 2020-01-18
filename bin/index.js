@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   const argv = require("minimist")(process.argv.slice(2), {
-    string: ["platforms", "version", "buildDir", "cacheDir"],
+    string: ["platforms", "version", "buildDir", "cacheDir", "files"],
     boolean: ["run", "forceDownload", "quiet"],
     alias: { "p": "platforms", "v": "version", "r": "run", "o": "buildDir", "f": "forceDownload", "s": "skipBuild" },
   });
@@ -13,6 +13,9 @@
     // Convert platforms string to array
     if ("platforms" in argv) {
       argv.platforms = argv.platforms.split(",");
+    }
+    if ("files" in argv) {
+      argv.files = argv.files.split(",");
     }
     const nwp = new NwPackager(argv);
 
