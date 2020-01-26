@@ -1,6 +1,7 @@
 (function () {
   "use strict";
   const CreatePackage = require("./CreatePackage");
+  const exec = require('child_process').exec;
   const fs = require('fs');
   const glob = require("glob");
   const ncp = require("ncp").ncp;
@@ -133,6 +134,16 @@
         self.tempDir = NwPackager.createTempDir(self.buildOptions.files);
         self.buildOptions.files = [`${self.tempDir}/**`];
         console.log(`Created temp directory at ${self.tempDir}`);
+
+        // Run npm install --production
+        console.log("Running npm install --production");
+        let child = exec("npm install --production", { cwd: self.tempDir }, (error, stdout, stderr) => {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+          });
 
         // Build app using nw-builder
         self.NwBuilder = new NwBuilder(self.buildOptions);
