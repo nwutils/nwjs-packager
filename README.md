@@ -60,6 +60,8 @@ const buildOptions = {
 }
 ```
 
+A longer term aim of this project is remove the nw-builder dependency entirely.
+
 ### packageOptions
 
 This object contains nwjs-packager specific settings. Outputs can be specified for an OS (eg `win`) which will affect both the x32 and x64 outputs, or for a specific platform (eg `win64`).
@@ -72,7 +74,7 @@ const packageOptions = {
   // which are replaced with the nw-builder appName, appVersion and platform (eg osx64) respectively
   "package_name": "%a%-%v%-%p%",
   // Only build for the current OS (regardless of the value of buildOptions.platforms)
-  // Reccommended for best results
+  // Recommended for best results
   "build_current_os_only": false,
   "linux": {
     "pre": {
