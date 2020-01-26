@@ -102,6 +102,11 @@
     build() {
       const self = this;
       return new Promise((resolve, reject) => {
+        // Check there are files
+        if (!self.buildOptions.files) {
+          reject(new Error("No files were selected."));
+        }
+
         // Create temp dir
         self.tempDir = NwPackager.createTempDir(self.buildOptions.files);
         self.buildOptions.files = [`${self.tempDir}/**`];

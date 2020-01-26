@@ -23,6 +23,8 @@ Build your NW.js app and generate archives, packages, setup files and more! Apps
 
 This is identical to that of [nw-builder](https://github.com/nwjs-community/nw-builder), except `nwp` should be used instead of `nwbuild`.
 
+In addition, files should be specified using `--files` argument rather than simply selecting a directory.
+
 ## Module usage
 
 ```node
