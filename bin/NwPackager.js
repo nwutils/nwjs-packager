@@ -271,6 +271,11 @@
       }
     }
 
+    /**
+     * Creates a temporary directory for packaging and moves all of the files over
+     * @param {String[]} files An array of files to copy
+     * @return {String} The path of the temporary directory
+     */
     static createTempDir(files) {
       // Move all of the selected files into a temporary directory
       // https://gist.github.com/6174/6062387
@@ -290,9 +295,9 @@
 
           // Make directories/files in temp location as appropriate
           if (fs.lstatSync(relativePath).isDirectory()) {
-            fs.mkdirSync(newTempPath, { recursive: true });
+            mkdirp.sync(newTempPath);
           } else {
-            fs.mkdirSync(path.dirname(newTempPath), { recursive: true });
+            mkdirp(path.dirname(newTempPath));
             fs.copyFileSync(filePath, newTempPath);
           }
         });
