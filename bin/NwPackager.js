@@ -297,7 +297,7 @@
           if (fs.lstatSync(relativePath).isDirectory()) {
             mkdirp.sync(newTempPath);
           } else {
-            mkdirp(path.dirname(newTempPath));
+            mkdirp.sync(path.dirname(newTempPath));
             fs.copyFileSync(filePath, newTempPath);
           }
         });
