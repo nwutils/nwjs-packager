@@ -4,7 +4,7 @@
   const exec = require('child_process').exec;
   const fs = require('fs');
   const glob = require("glob");
-  const ncp = require("ncp").ncp;
+  const mkdirp = require("mkdirp");
   const NwBuilder = require("nw-builder");
   const path = require("path");
   const PreActions = require("./PreActions");
