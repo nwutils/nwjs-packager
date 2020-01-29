@@ -3,7 +3,6 @@
   const archiver = require("archiver");
   const exec = require("child_process").exec;
   const fs = require("fs");
-  const mkdirp = require("mkdirp");
   const path = require("path");
 
   /**

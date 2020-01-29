@@ -1,6 +1,6 @@
 {
   "name": "nwjs-packager",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Module to build, add packages and release to GitHub NW.js apps",
   "main": "bin/index.js",
   "scripts": {
