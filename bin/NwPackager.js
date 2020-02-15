@@ -1,12 +1,13 @@
 (function () {
   "use strict";
-  const CreatePackage = require("./CreatePackage");
   const exec = require('child_process').exec;
   const fs = require('fs');
   const glob = require("glob");
   const mkdirp = require("mkdirp");
-  const NwBuilder = require("nw-builder");
   const path = require("path");
+
+  const CreatePackage = require("./CreatePackage");
+  const NwBuilder = require("nw-builder");
   const PreActions = require("./PreActions");
 
   /**
