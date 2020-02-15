@@ -5,6 +5,7 @@
   const glob = require("glob");
   const mkdirp = require("mkdirp");
   const path = require("path");
+  const process = require("process");
 
   const CreatePackage = require("./CreatePackage");
   const NwBuilder = require("nw-builder");
@@ -90,30 +91,14 @@
     run() {
       const self = this;
 
-      // Check there are files
-      if (!self.buildOptions.files) {
-        throw new Error("No files were selected.");
-      }
-
-      // Create temp dir
-      self.tempDir = NwPackager.createTempDir(self.buildOptions.files);
-      self.buildOptions.files = [`${self.tempDir}/**`];
-      console.log(`Created temp directory at ${self.tempDir}`);
+      // Use current directory
+      self.buildOptions.files = [`${process.cwd()}/**`]
 
       let nwb = new NwBuilder(self.buildOptions);
       nwb.on("log", console.log);
 
       nwb.run().then(() => {
         console.log("Finished running app");
-
-        // Delete the temporary directory
-        fs.rmdir(self.tempDir, { recursive: true }, (err) => {
-          if (err) {
-            throw err;
-          } else {
-            console.log(`Removed temp directory at ${self.tempDir}`);
-          }
-        });
       }).catch(function (error) {
         console.error(error);
       });
