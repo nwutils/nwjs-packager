@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 (async function () {
   "use strict";
-  const Inno = require("./package/Inno");
+  const Inno = require("./output/Inno");
 
   try {
     let output = new Inno("test", "test", "test", "C:\\Users\\Charlie\\Documents\\GitHub\\boats-animator\\win-install\\setup.iss");

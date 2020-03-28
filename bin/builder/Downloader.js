@@ -6,25 +6,25 @@
    */
   class Downloader {
     /**
-     * 
-     * @param {*} version 
-     * @param {*} osName 
-     * @param {*} architecture 
-     * @param {*} sdk 
-     * @param {*} baseUrl 
+     * @param {String} nwVersion The version of NW.js to download (eg "0.44.5")
+     * @param {String} nwFlavor The "flavor" of NW.js (possible values "normal" or "sdk")
+     * @param {String} platform The operating system of the package
+     *                          (possible values darwin, linux or win32)
+     * @param {String} architecture The operating system architecture (possible values "x64" or "ia32")
+     * @param {String} baseUrl The url of the website with the NW.js binary (default "https://dl.nwjs.io")
      */
-    contructor(version, osName, architecture = 64, sdk = false, baseUrl = "https://dl.nwjs.io") {
-      this.version = version;
-      this.osName = osName;
+    contructor(nwVersion, nwFlavor, platform, architecture, baseUrl = "https://dl.nwjs.io") {
+      this.nwVersion = nwVersion;
+      this.nwFlavor = nwFlavor;
+      this.platform = platform;
       this.architecture = architecture;
-      this.sdk = sdk;
-      this.url = `${baseUrl}/v${this.version}/`;
+      this.url = `${baseUrl}/v${this.nwVersion}/`;
     }
 
     /**
      * Downloads and unzips the archive containing an NW.js binary
      * @param {Boolean} forceDownload Fetch a given archive even if it has been
-     *                  previously downloaded (default: false).
+     *                                previously downloaded (default: false).
      */
     get(forceDownload = false) {
       // Make the cache dir if needed
@@ -49,10 +49,10 @@
     _fileName() {
       const downloadFileName = [
         "nwjs",
-        (this.sdk ? "sdk" : ""),
-        `v${version}`,
-        this.osName,
-        (this.architecture === 64 ? "x64" : "ia32")
+        (this.nwFlavor === "sdk" ? "sdk" : ""),
+        `v${this.nwVersion}`,
+        this.platform,
+        this.architecture,
       ];
       return `${downloadFileName.join("-")}.${this.platform === "linux" ? "tar.gz" : "zip"}`;
     }
