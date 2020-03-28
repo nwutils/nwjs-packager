@@ -76,42 +76,41 @@
       // todo make sure only one file generated
       return new Promise((resolve, reject) => {
         // Can only build Inno Setup on Windows
-        if (process.platform === "win32") {
-          let setupFile = "";
-          // Determine setup file location
-          if (self.useOsSettings) {
-            setupFile = self.nwp["packageOptions"]["win"]["packages"]["inno_setup"];
-          } else {
-            setupFile = self.nwp["packageOptions"][self.platform]["packages"]["inno_setup"];
-          }
-          // If boolean value rather than file name used, generate the setup file
-          if (setupFile === true) {
-            // todo setupFile = methodToGenerateSetupFile();
-          }
-          console.log(`  [win32] Create Inno Setup 5 exe from ${setupFile}`);
-
-          // Check Inno Setup is installed
-          fs.open("C:/Program Files (x86)/Inno Setup 5", "r", function (err, fd) {
-            if (err) {
-              reject(Error("Please install Inno Setup 5 to create a win32 installer"));
-            } else {
-              // Run the Inno Setup CLI
-              // todo handle relative setup file paths
-              exec(`cd C:/Program Files (x86)/Inno Setup 5/ && ISCC.exe ${setupFile}`, function (error, stdout, stderr) {
-                if (error) {
-                  reject(error);
-                } else if (stderr) {
-                  reject(stderr);
-                } else {
-                  resolve();
-                }
-              });
-            }
-          });
-        } else {
-          console.log("  [!win32] Must be on win32 to build Inno Setup exe");
-          resolve();
+        if (process.platform !== "win32") {
+          reject(Error("Inno Setup packages can only be created on Windows"));
         }
+
+        let setupFile = "";
+        // Determine setup file location
+        if (self.useOsSettings) {
+          setupFile = self.nwp["packageOptions"]["win"]["packages"]["inno_setup"];
+        } else {
+          setupFile = self.nwp["packageOptions"][self.platform]["packages"]["inno_setup"];
+        }
+        // If boolean value rather than file name used, generate the setup file
+        if (setupFile === true) {
+          // todo setupFile = methodToGenerateSetupFile();
+        }
+        console.log(`  [win32] Create Inno Setup 5 exe from ${setupFile}`);
+
+        // Check Inno Setup is installed
+        fs.open("C:/Program Files (x86)/Inno Setup 5", "r", function (err, fd) {
+          if (err) {
+            reject(Error("Please install Inno Setup 5 to create a win32 installer"));
+          } else {
+            // Run the Inno Setup CLI
+            // todo handle relative setup file paths
+            exec(`cd C:/Program Files (x86)/Inno Setup 5/ && ISCC.exe ${setupFile}`, function (error, stdout, stderr) {
+              if (error) {
+                reject(error);
+              } else if (stderr) {
+                reject(stderr);
+              } else {
+                resolve();
+              }
+            });
+          }
+        });
       });
     }
 
