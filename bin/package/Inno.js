@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const child_process = require("child_process");
+  const childProcess = require("child_process");
   const fs = require("fs");
 
   const Package = require("./Package");
@@ -47,7 +47,7 @@
 
       // Run the Inno Setup CLI
       // TODO handle relative setup file paths
-      const command = child_process.execFile(`${this.innoExeDir}/ISCC.exe`, [this.innoFile]);
+      const command = childProcess.execFile(`${this.innoExeDir}/ISCC.exe`, [this.innoFile]);
       command.stdout.on("data", function (data) {
         console.log(data.toString());
       });
