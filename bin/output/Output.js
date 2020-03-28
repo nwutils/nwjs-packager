@@ -1,9 +1,9 @@
 (function () {
   "use strict";
   /**
-   * Generic class for the creation of a package
+   * Generic class for the creation of an output package
    */
-  class Package {
+  class Output {
     /**
      * @param {String} inputDir The path to the directory of files to package.
      * @param {String} outputDir The path to the directory to output the package to.
@@ -30,5 +30,6 @@
       return this.packageName;
     }
   }
-  module.exports = Package;
+
+  module.exports = Output;
 })();

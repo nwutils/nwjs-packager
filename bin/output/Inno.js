@@ -3,12 +3,12 @@
   const childProcess = require("child_process");
   const fs = require("fs");
 
-  const Package = require("./Package");
+  const Output = require("./Output");
 
   /**
    * Class for creating Inno Setup exe the creation of a package
    */
-  class Inno extends Package {
+  class Inno extends Output {
     /**
      * @param {String} inputDir The path to the directory of files to package.
      * @param {String} outputDir The path to the directory to output the package to.

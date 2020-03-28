@@ -3,12 +3,12 @@
   const archiver = require("archiver");
   const fs = require("fs");
 
-  const Package = require("./Package");
+  const Output = require("./Output");
 
   /**
    * Class for creating zip/tar.gz archives.
    */
-  class Archive extends Package {
+  class Archive extends Output {
     /**
      * @param {String} inputDir The path to the directory of files to package.
      * @param {String} outputDir The path to the directory to output the package to.
