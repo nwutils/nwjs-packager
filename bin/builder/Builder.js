@@ -1,6 +1,7 @@
 (function () {
   "use strict";
   const os = require("os");
+  const path = require("path");
   const process = require("process");
 
   const Downloader = require("./Downloader");
@@ -10,60 +11,25 @@
    */
   class Builder {
     /**
+     * 
      * @param {Object} userOptions An hash of options for the build
+     * @param {String} platform The operating system to build for (default is the current platform)
+     * @param {String} architecture The architecture to build for (x64 or ia32)
      */
-    constructor(userOptions = {}) {
-      const defaultOptions = {
-        // {String[]} The file to include in the output packages
-        "files": [`${process.cwd()}/**`],
-        // {String} Location to store downloaded NW.js binaries
-        "cacheDir":  path.join(os.homedir(), ".nwjs-packager", "cache"),
-        // {String} Location to store app files ready for packaging
-        "tempDir":  path.join(os.homedir(), ".nwjs-packager", "temp"),
-        // {String} Location to output packages to
-        "outputDir": path.join(process.cwd, "bin"),
+    constructor(userOptions = {}, platform = null, architecture = null) {
+      this.options = userOptions;
 
-        // {String} The operating system platform to build for
-        // (possible values darwin, linux or win32)
-        "platform": Builder.nodeToNwjsPlatform(process.platform),
-        // {String} The operating system architecture (possible values "x64" or "ia32")
-        "architecture": (process.arch === "x64" ? "x64" : "ia32"),
-
-        // The version of NW.js to use (note versions should be in format "v0.44.5")
-        "nwVersion": "stable",
-        // The "flavor" of NW.js to use (possible values "normal" or "sdk")
-        "nwFlavor": "normal",
-
-        // The nerd name for the app to use in file names (ie there should be no spaces)
-        "appPackageName": "my-app",
-        // The version of the app
-        "appVersion": "0.1.0",
-        // The file name format of output packages. Can use the special symbols %a%, %v% %p%
-        // which are replaced with the appPackageName appName, appVersion and NW.js platform (eg osx-x64) respectively
-        "appOutputName": "%a%-%v%-%p%",
-        // The nice name of the app to display to the user (ie there can be spaces)
-        "appFriendlyName": "My App",
-        // A path to a .icns file to use for generating the macOS icon
-        "appMacIcon": null,
-        // A path to an .ico file to use for generating the Windows icon
-        "appWinIcon": null,
-        // A short description of the app. Used in the macOS Info.plist and Windows fileVersion.
-        "appDescription": "App generated using nwjs-packager.",
-        // The copyright detail of the app. Used in the macOS Info.plist and Windows fileVersion.
-        "appCopyright": `© ${new Date().getFullYear()} My App Developers`,
-
-        // The outputs to generate
-        // Possibles values are "deb", "rpm", "tar.gz", "zip", "pkg", "innoSetup" depending on the platform
-        "outputs": [],
-      };
-      // Combine default and user options
-      this.options = Object.assign(defaultOptions, userOptions);
+      // The operating system platform to build for
+      // (possible values darwin, linux or win32)
+      this.platform = (platform ? platform : Builder.nodeToNwjsPlatform(process.platform));
+      // The operating system architecture (possible values "x64" or "ia32")
+      this.architecture = (architecture ? architecture : (process.arch === "x64" ? "x64" : "ia32"));
 
       this.downloader = new Downloader(
           this.options.nwVersion,
           this.options.nwFlavor,
-          this.options.platform,
-          this.options.architecture,
+          this.platform,
+          this.architecture,
           this.options.cacheDir,
       );
     }
@@ -72,7 +38,8 @@
      * Downloads an NW.js binary, runs npm install --production on the app files and
      * appends the app the binary.
      */
-    package() {
+    async package() {
+      console.log(`[Builder] Start ${this.platform}-${this.architecture} package`);
       // Unzip the nw archive to the output directory
       let nwArchivePath = await this.downloader.get();
       // unzip(nwArchivePath, path.join(this.outputDir, this.appOutputName));
@@ -84,21 +51,25 @@
       // Zip temp dir and rename to app.nw
 
       // Append app.nw into nw archive
+      return;
     }
 
     /**
      * Runs extra steps in the build process that are OS specific.
      */
-    packageExtras() {
+    async packageExtras() {
       this._addIcon();
       this._renameOsxFiles();
+      return;
     }
 
     /**
      * Generate the selected outputs for the build.
      */
-    generateOutputs() {
-
+    async generateOutputs() {
+      let outputs = this.options.builds[this.options.platform];
+      console.log(outputs);
+      return;
     }
 
     /**
@@ -110,13 +81,14 @@
       } else if (this.options.platform === "win") {
 
       }
+      return;
     }
 
     /**
      * On macOS, a number of files and plist entries need renaming from NW.js to the app's name.
      */
     _renameOsxFiles() {
-
+      return;
     }
 
     /**

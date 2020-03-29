@@ -51,6 +51,7 @@
       // See if the archive is already downloaded (if force is false)
 
       // Download the archive
+      console.log(`[Downloader] Downloading ${this._fileName()} NW.js binary...`);
       const filePath = path.join(this.cacheDir, this._fileName());
       let download = await getBuffer(this._url());
       fs.writeFileSync(filePath, download);
