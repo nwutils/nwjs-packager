@@ -17,11 +17,11 @@
         // {String[]} The file to include in the output packages
         "files": [`${process.cwd()}/**`],
         // {String} Location to store downloaded NW.js binaries
-        "cacheDir": `${os.homedir()}/.nwjs-packager/cache`,
+        "cacheDir":  path.join(os.homedir(), ".nwjs-packager", "cache"),
         // {String} Location to store app files ready for packaging
-        "tempDir": `${os.homedir()}/.nwjs-packager/temp`,
+        "tempDir":  path.join(os.homedir(), ".nwjs-packager", "temp"),
         // {String} Location to output packages to
-        "outputDir": `${process.cwd()}/bin`,
+        "outputDir": path.join(process.cwd, "bin"),
 
         // {String} The operating system platform to build for
         // (possible values darwin, linux or win32)
@@ -29,7 +29,7 @@
         // {String} The operating system architecture (possible values "x64" or "ia32")
         "architecture": (process.arch === "x64" ? "x64" : "ia32"),
 
-        // The version of NW.js to use
+        // The version of NW.js to use (note versions should be in format "v0.44.5")
         "nwVersion": "stable",
         // The "flavor" of NW.js to use (possible values "normal" or "sdk")
         "nwFlavor": "normal",
@@ -54,7 +54,7 @@
 
         // The outputs to generate
         // Possibles values are "deb", "rpm", "tar.gz", "zip", "pkg", "innoSetup" depending on the platform
-        "outputs": []
+        "outputs": [],
       };
       // Combine default and user options
       this.options = Object.assign(defaultOptions, userOptions);
@@ -64,7 +64,59 @@
           this.options.nwFlavor,
           this.options.platform,
           this.options.architecture,
+          this.options.cacheDir,
       );
+    }
+
+    /**
+     * Downloads an NW.js binary, runs npm install --production on the app files and
+     * appends the app the binary.
+     */
+    package() {
+      // Unzip the nw archive to the output directory
+      let nwArchivePath = await this.downloader.get();
+      // unzip(nwArchivePath, path.join(this.outputDir, this.appOutputName));
+
+      // Copy app files to temp dir
+
+      // Run npm install --production
+
+      // Zip temp dir and rename to app.nw
+
+      // Append app.nw into nw archive
+    }
+
+    /**
+     * Runs extra steps in the build process that are OS specific.
+     */
+    packageExtras() {
+      this._addIcon();
+      this._renameOsxFiles();
+    }
+
+    /**
+     * Generate the selected outputs for the build.
+     */
+    generateOutputs() {
+
+    }
+
+    /**
+     * Adds icons to macOS of Windows packages.
+     */
+    _addIcon() {
+      if (this.options.platform === "osx") {
+
+      } else if (this.options.platform === "win") {
+
+      }
+    }
+
+    /**
+     * On macOS, a number of files and plist entries need renaming from NW.js to the app's name.
+     */
+    _renameOsxFiles() {
+
     }
 
     /**
