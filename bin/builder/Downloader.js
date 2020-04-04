@@ -51,8 +51,8 @@
       // See if the archive is already downloaded (if force is false)
 
       // Download the archive
-      console.log(`[Downloader] Downloading ${this._fileName()} NW.js binary...`);
-      const filePath = path.join(this.cacheDir, this._fileName());
+      console.log(`[Downloader] Downloading ${this.fileName()} NW.js binary...`);
+      const filePath = path.join(this.cacheDir, `${this.fileName()}${this._archiveExtension()}`);
       let download = await getBuffer(this._url());
       fs.writeFileSync(filePath, download);
 
@@ -65,14 +65,14 @@
      * (eg nwjs-sdk-v0.28.1-linux-ia32.tar.gz or nwjs-v0.41.1-win-x64.zip)
      * @return {String} The file name of the archive to download
      */
-    _fileName() {
+    fileName() {
       const downloadFileName = [
         (this.nwFlavor === "sdk" ? "nwjs-sdk" : "nwjs"),
         this.nwVersion,
         this.platform,
         this.architecture,
       ];
-      return `${downloadFileName.join("-")}${this.platform === "linux" ? ".tar.gz" : ".zip"}`;
+      return downloadFileName.join("-");
     }
 
 
@@ -80,7 +80,11 @@
      * Builds the url containing the archive to download.
      */
     _url() {
-      return `${this.baseUrl}/${this.nwVersion}/${this._fileName()}`;
+      return `${this.baseUrl}/${this.nwVersion}/${this.fileName()}${this._archiveExtension()}`;
+    }
+
+    _archiveExtension() {
+      return (this.platform === "linux" ? ".tar.gz" : ".zip");
     }
   }
 

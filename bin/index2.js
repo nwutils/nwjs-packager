@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 (async function () {
   "use strict";
+  const fs = require("fs");
   const os = require("os");
   const path = require("path");
   const process = require("process");
@@ -28,7 +29,7 @@
       // Location to store app files ready for packaging
       "tempDir": path.join(os.homedir(), ".nwjs-packager", "temp"),
       // Location to output packages to
-      "outputDir": path.join(process.cwd(), "bin"),
+      "outputDir": path.join(process.cwd(), "build"),
 
       // The version of NW.js to use (note versions should be in format "v0.44.5")
       // The strings "stable", "latest" or "lts" are also permitted

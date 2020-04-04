@@ -21,14 +21,6 @@
     async build() {
       return;
     }
-
-    /**
-     * Converts templates from package_name to output string.
-     * @return {String} The package name converted.
-     */
-    renderPackageNameTemplates() {
-      return this.packageName;
-    }
   }
 
   module.exports = Output;

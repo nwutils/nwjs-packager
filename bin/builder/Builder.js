@@ -1,8 +1,12 @@
 (function () {
   "use strict";
-  const os = require("os");
+  const fs = require("fs");
   const path = require("path");
   const process = require("process");
+  const {promisify} = require("util");
+
+  const extract = require("extract-zip");
+  const rimraf = require("rimraf");
 
   const Downloader = require("./Downloader");
 
@@ -40,9 +44,21 @@
      */
     async package() {
       console.log(`[Builder] Start ${this.platform}-${this.architecture} package`);
+
       // Unzip the nw archive to the output directory
-      let nwArchivePath = await this.downloader.get();
-      // unzip(nwArchivePath, path.join(this.outputDir, this.appOutputName));
+      const nwArchivePath = await this.downloader.get();
+      await extract(nwArchivePath, {dir: this.options.outputDir});
+
+      // Remove existing output dir
+      const appOutputDir = path.join(this.options.outputDir, this._renderPackageName());
+      if (fs.existsSync(appOutputDir)) {
+        await promisify(rimraf)(appOutputDir);
+      }
+
+      // Rename NW.js binary dir to the app output name
+      const dirToRename = path.join(this.options.outputDir, this.downloader.fileName());
+      await promisify(fs.rename)(dirToRename, appOutputDir);
+      console.log(`[Builder] Rename NW.js binary dir to ${dirToRename}`);
 
       // Copy app files to temp dir
 
@@ -89,6 +105,18 @@
      */
     _renameOsxFiles() {
       return;
+    }
+
+    /**
+     * Converts templates from package_name to output string.
+     * @return {String} The package name converted.
+     */
+    _renderPackageName() {
+      let output = this.options.appOutputName;
+      output = output.replace(/%a%/g, this.options.appPackageName);
+      output = output.replace(/%v%/g, this.options.appVersion);
+      output = output.replace(/%p%/g, `${this.platform}-${this.architecture}`);
+      return output;
     }
 
     /**
