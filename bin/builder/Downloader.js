@@ -48,13 +48,16 @@
         }
       }
 
-      // See if the archive is already downloaded (if force is false)
-
-      // Download the archive
-      console.log(`[Downloader] Downloading ${this.fileName()} NW.js binary...`);
       const filePath = path.join(this.cacheDir, `${this.fileName()}${this._archiveExtension()}`);
-      let download = await getBuffer(this._url());
-      fs.writeFileSync(filePath, download);
+
+      // See if the archive is already downloaded
+      if (forceDownload || !fs.existsSync(filePath)) {
+        console.log(`[Downloader] Downloading ${this.fileName()} NW.js binary...`);
+        const download = await getBuffer(this._url());
+        fs.writeFileSync(filePath, download);
+      } else {
+        console.log(`[Downloader] Retrieved cached ${this.fileName()} NW.js binary`);
+      }
 
       // Return the path of the downloaded binary
       return filePath;
