@@ -65,7 +65,7 @@
 
     /**
      * Builds the archive name to download in the correct format.
-     * (eg nwjs-sdk-v0.28.1-linux-ia32.tar.gz or nwjs-v0.41.1-win-x64.zip)
+     * (eg nwjs-sdk-v0.28.1-linux-ia32 or nwjs-v0.41.1-win-x64)
      * @return {String} The file name of the archive to download
      */
     fileName() {

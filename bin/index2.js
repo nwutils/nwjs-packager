@@ -1,20 +1,30 @@
 #!/usr/bin/env node
 (async function () {
   "use strict";
-  const fs = require("fs");
   const os = require("os");
   const path = require("path");
   const process = require("process");
 
+  const argv = require("minimist")(process.argv.slice(2), {
+    boolean: ["run"],
+    alias: {"r": "run"},
+  });
+
   const Builder = require("./builder/Builder");
+  const Runner = require("./builder/Runner");
   const Utils = require("./Utils");
+
+  try {
+    console.log("Welcome to nwjs-packager!");
+    init();
+  } catch (err) {
+    console.error(err);
+  }
 
   /**
    * Initializes the application
    */
   async function init() {
-    console.log("Welcome to nwjs-packager!");
-
     // Get user options from package.json
     const packageJSON = require(path.join(process.cwd(), "package.json"));
     if (!packageJSON["nwjs-packager"]) {
@@ -67,16 +77,16 @@
     // Combine default and user options
     const options = Object.assign(defaultOptions, packageJSON["nwjs-packager"]);
 
-    // Create a builder for the current OS
-    const builder = new Builder(options);
-    await builder.package();
-    await builder.packageExtras();
-    await builder.generateOutputs();
-  }
-
-  try {
-    init();
-  } catch (err) {
-    console.error(err);
+    // Are we running the app or packaging it?
+    if (argv.run) {
+      const runner = new Runner(options);
+      runner.run();
+    } else {
+      // Create a builder for the current OS
+      const builder = new Builder(options);
+      await builder.package();
+      await builder.packageExtras();
+      await builder.generateOutputs();
+    }
   }
 })();
