@@ -27,10 +27,9 @@
       console.log("[Runner] Start");
 
       // Unzip the nw archive to the cache directory
-      await this.downloader.get();
+      const nwBinaryPath = await this.downloader.get();
 
       // Run the command `nw path/to/app`
-      const nwBinaryPath = path.join(this.options.cacheDir, this.downloader.fileName(), "nw");
       const command = childProcess.execFile(nwBinaryPath, [process.cwd()]);
       command.stdout.on("data", function (data) {
         console.log(data.toString());

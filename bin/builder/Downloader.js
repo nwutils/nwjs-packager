@@ -43,18 +43,18 @@
       const namedReleases = ["latest", "stable", "lts"];
       if (namedReleases.includes(this.nwVersion)) {
         // todo cache versions.json for offline use
-        let versions = await getJSON("https://nwjs.io/versions.json");
+        const versions = await getJSON("https://nwjs.io/versions.json");
         if (versions[this.nwVersion]) {
           this.nwVersion = versions[this.nwVersion];
         }
       }
 
       const nwDirPath = path.join(this.cacheDir, this.fileName());
-      const nwArchivePath = path.join(this.cacheDir, `${this.fileName()}${this._archiveExtension()}`);
 
       // See if the archive is already downloaded
       if (forceDownload || !fs.existsSync(nwDirPath)) {
         console.log(`[Downloader] Downloading ${this.fileName()} NW.js binary...`);
+        const nwArchivePath = path.join(this.cacheDir, `${this.fileName()}${this._archiveExtension()}`);
         const download = await getBuffer(this._url());
         fs.writeFileSync(nwArchivePath, download);
 
@@ -63,7 +63,6 @@
       } else {
         console.log(`[Downloader] Retrieved cached ${this.fileName()} NW.js binary`);
       }
-
 
       // Return the path of the downloaded binary
       return nwDirPath;
@@ -87,6 +86,7 @@
 
     /**
      * Builds the url containing the archive to download.
+     * @return {String} The url containing the binary to download
      */
     _url() {
       return `${this.baseUrl}/${this.nwVersion}/${this.fileName()}${this._archiveExtension()}`;

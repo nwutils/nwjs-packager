@@ -5,7 +5,7 @@
   const process = require("process");
   const {promisify} = require("util");
 
-  const extract = require("extract-zip");
+  const copy = require("recursive-copy");
   const rimraf = require("rimraf");
 
   const Downloader = require("./Downloader");
@@ -46,19 +46,17 @@
       console.log(`[Builder] Start ${this.platform}-${this.architecture} package`);
 
       // Unzip the nw archive to the output directory
-      const nwArchivePath = await this.downloader.get();
-      await extract(nwArchivePath, {dir: this.options.outputDir});
+      const nwDirPath = await this.downloader.get();
+      const appOutputDir = path.join(this.options.outputDir, this._renderPackageName());
 
       // Remove existing output dir
-      const appOutputDir = path.join(this.options.outputDir, this._renderPackageName());
       if (fs.existsSync(appOutputDir)) {
         await promisify(rimraf)(appOutputDir);
       }
 
       // Rename NW.js binary dir to the app output name
-      const dirToRename = path.join(this.options.outputDir, this.downloader.fileName());
-      await promisify(fs.rename)(dirToRename, appOutputDir);
-      console.log(`[Builder] Rename NW.js binary dir to ${dirToRename}`);
+      console.log(`[Builder] Copy NW.js binary dir to ${appOutputDir}`);
+      await promisify(copy)(nwDirPath, appOutputDir);
 
       // Copy app files to temp dir
 
