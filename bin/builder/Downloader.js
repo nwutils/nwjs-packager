@@ -4,6 +4,7 @@
   const path = require("path");
 
   const bent = require("bent");
+  const extract = require("extract-zip");
   const getJSON = bent("json");
   const getBuffer = bent("buffer");
 
@@ -48,19 +49,24 @@
         }
       }
 
-      const filePath = path.join(this.cacheDir, `${this.fileName()}${this._archiveExtension()}`);
+      const nwDirPath = path.join(this.cacheDir, this.fileName());
+      const nwArchivePath = path.join(this.cacheDir, `${this.fileName()}${this._archiveExtension()}`);
 
       // See if the archive is already downloaded
-      if (forceDownload || !fs.existsSync(filePath)) {
+      if (forceDownload || !fs.existsSync(nwDirPath)) {
         console.log(`[Downloader] Downloading ${this.fileName()} NW.js binary...`);
         const download = await getBuffer(this._url());
-        fs.writeFileSync(filePath, download);
+        fs.writeFileSync(nwArchivePath, download);
+
+        // Unzip the nw archive
+        await extract(nwArchivePath, {dir: this.cacheDir});
       } else {
         console.log(`[Downloader] Retrieved cached ${this.fileName()} NW.js binary`);
       }
 
+
       // Return the path of the downloaded binary
-      return filePath;
+      return nwDirPath;
     }
 
     /**

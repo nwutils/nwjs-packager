@@ -4,8 +4,6 @@
   const path = require("path");
   const process = require("process");
 
-  const extract = require("extract-zip");
-
   const Builder = require("./Builder");
 
   /**
@@ -29,8 +27,7 @@
       console.log("[Runner] Start");
 
       // Unzip the nw archive to the cache directory
-      const nwArchivePath = await this.downloader.get();
-      await extract(nwArchivePath, {dir: this.options.cacheDir});
+      await this.downloader.get();
 
       // Run the command `nw path/to/app`
       const nwBinaryPath = path.join(this.options.cacheDir, this.downloader.fileName(), "nw");
