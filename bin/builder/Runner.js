@@ -1,6 +1,7 @@
 (function () {
   "use strict";
-  const childProcess = require("child_process");
+  const {promisify} = require("util");
+  const execFile = promisify(require("child_process").execFile);
   const path = require("path");
   const process = require("process");
 
@@ -27,24 +28,18 @@
       console.log("[Runner] Start");
 
       // Unzip the nw archive to the cache directory
-      const nwBinaryPath = await this.downloader.get();
+      const nwDirPath = await this.downloader.get();
+      const nwBinaryPath = path.join(nwDirPath, this.platform === "osx" ? "nwjs.app" : "nw");
 
-      // Run the command `nw path/to/app`
-      const command = childProcess.execFile(nwBinaryPath, [process.cwd()]);
-      command.stdout.on("data", function (data) {
-        console.log(data.toString());
-      });
+      let command;
+      if (this.platform === "osx") {
+        command = await execFile("open", ["-a", nwBinaryPath, "--args", process.cwd()]);
+      } else {
+        command = await execFile(nwBinaryPath, [process.cwd()]);
+      }
+      console.log(command.stdout);
 
-      // Return true if the build was successful
-      return new Promise(function (resolve, reject) {
-        command.on("close", function (code) {
-          if (code === 0) {
-            resolve(true);
-          } else {
-            reject(new Error(`Error closing NW.js (error code ${code})`));
-          }
-        });
-      });
+      return;
     }
   }
 
