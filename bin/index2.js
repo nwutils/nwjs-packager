@@ -33,7 +33,7 @@
 
     const defaultOptions = {
       // An array of files to include in the output packages. Globs are accepted.
-      "files": [`${process.cwd()}/**`],
+      "files": [],
       // Location to store downloaded NW.js binaries
       "cacheDir": path.join(os.homedir(), ".nwjs-packager", "cache"),
       // Location to store app files ready for packaging

@@ -5,7 +5,9 @@
   const process = require("process");
   const {promisify} = require("util");
 
+  const glob = require("glob");
   const copy = require("recursive-copy");
+  const mkdirp = require("mkdirp");
   const rimraf = require("rimraf");
 
   const Downloader = require("./Downloader");
@@ -59,6 +61,7 @@
       await promisify(copy)(nwDirPath, appOutputDir);
 
       // Copy app files to temp dir
+      const tempAppFilesDir = Builder.createTempDir(this.options.files);
 
       // Run npm install --production
 
@@ -87,7 +90,7 @@
     }
 
     /**
-     * Adds icons to macOS of Windows packages.
+     * Adds icons to macOS and Windows packages.
      */
     _addIcon() {
       if (this.options.platform === "osx") {
@@ -118,21 +121,42 @@
     }
 
     /**
-     * jo
-     * @param {*} output thing
-     * @return {Output} thing 
+     * Creates a temporary directory for packaging and moves all of the files over
+     * @param {String[]} files An array of files to copy
+     * @return {String} The path of the temporary directory
      */
-    static initialiseOutput(output) {
-      switch (output) {
-        case "win32":
-          return "win";
-        case "darwin":
-          return "osx";
-        case "linux":
-          return "linux";
-        default:
-          throw new Error(`${platform} is not a valid NW.js platform`);
+    static createTempDir(files) {
+      if (files.length === 0) {
+        throw new Error("No files were selected")
       }
+
+      // Move all of the selected files into a temporary directory
+      // https://gist.github.com/6174/6062387
+      let tempUuid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      let tempDir = `${require('os').homedir()}/.nwjs-packager/temp/${tempUuid}`;
+
+      // Loop through each selected glob and file
+      files.forEach(function (file, i) {
+        // Normalize the glob
+        files[i] = path.normalize(file);
+
+        // Move each file that matches the glob to the temp dir
+        let matchedFiles = glob.sync(files[i], {});
+        matchedFiles.forEach(function (filePath) {
+          let relativePath = path.relative(process.cwd(), filePath);
+          let newTempPath = `${tempDir}/${relativePath}`;
+
+          // Make directories/files in temp location as appropriate
+          if (fs.lstatSync(relativePath).isDirectory()) {
+            mkdirp.sync(newTempPath);
+          } else {
+            mkdirp.sync(path.dirname(newTempPath));
+            fs.copyFileSync(filePath, newTempPath);
+          }
+        });
+      });
+
+      return tempDir;
     }
 
     /**
