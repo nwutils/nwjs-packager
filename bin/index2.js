@@ -4,11 +4,13 @@
   const os = require("os");
   const path = require("path");
   const process = require("process");
+  const {promisify} = require("util");
 
   const argv = require("minimist")(process.argv.slice(2), {
     boolean: ["run"],
     alias: {"r": "run"},
   });
+  const rimraf = require("rimraf");
 
   const Builder = require("./builder/Builder");
   const Runner = require("./builder/Runner");
@@ -84,9 +86,19 @@
     } else {
       // Create a builder for the current OS
       const builder = new Builder(options);
-      await builder.package();
-      await builder.packageExtras();
-      await builder.generateOutputs();
+      try {
+        await builder.package();
+        await builder.packageExtras();
+        await builder.generateOutputs();
+      } catch (err) {
+        console.error(err);
+
+        // Delete temporary directory if error
+        if (builder.tempAppFilesDir !== "") {
+          console.log(`[Builder] Removed temp app files dir ${this.tempAppFilesDir}`);
+          await promisify(rimraf)(builder.tempAppFilesDir);
+        }
+      }
     }
   }
 })();

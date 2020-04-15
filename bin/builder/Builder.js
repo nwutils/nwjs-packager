@@ -4,6 +4,7 @@
   const path = require("path");
   const process = require("process");
   const {promisify} = require("util");
+  const exec = promisify(require("child_process").exec);
 
   const glob = require("glob");
   const copy = require("recursive-copy");
@@ -30,6 +31,8 @@
       this.platform = (platform ? platform : Builder.nodeToNwjsPlatform(process.platform));
       // The operating system architecture (possible values "x64" or "ia32")
       this.architecture = (architecture ? architecture : (process.arch === "x64" ? "x64" : "ia32"));
+      // The directory to store the app files
+      this.tempAppFilesDir = "";
 
       this.downloader = new Downloader(
           this.options.nwVersion,
@@ -64,13 +67,23 @@
       this.options.files.push("package.json");
 
       // Copy app files to temp dir
-      const tempAppFilesDir = Builder.createTempDir(this.options.files);
+      this.tempAppFilesDir = Builder.createTempDir(this.options.files);
+      console.log(`[Builder] Created temp app files dir ${this.tempAppFilesDir}`);
 
       // Run npm install --production
+      console.log("[Builder] Running npm install --production");
+      let child = await exec("npm install --production", { cwd: this.tempAppFilesDir });
+      console.log(child.stdout);
+      console.error(child.stderr);
 
       // Zip temp dir and rename to app.nw
 
       // Append app.nw into nw archive
+
+      // Delete temporary directory
+      console.log(`[Builder] Removed temp app files dir ${this.tempAppFilesDir}`);
+      await promisify(rimraf)(this.tempAppFilesDir);
+
       return;
     }
 
