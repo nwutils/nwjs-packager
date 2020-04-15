@@ -7,6 +7,7 @@
   const extract = require("extract-zip");
   const getJSON = bent("json");
   const getBuffer = bent("buffer");
+  const mkdirp = require("mkdirp");
 
   /**
    * Class for downloading an NW.js binary.
@@ -50,6 +51,9 @@
       }
 
       const nwDirPath = path.join(this.cacheDir, this.fileName());
+
+      // Make cache directory if needed
+      mkdirp.sync(this.cacheDir);
 
       // See if the archive is already downloaded
       if (forceDownload || !fs.existsSync(nwDirPath)) {

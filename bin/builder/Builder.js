@@ -60,6 +60,9 @@
       console.log(`[Builder] Copy NW.js binary dir to ${appOutputDir}`);
       await promisify(copy)(nwDirPath, appOutputDir);
 
+      // Make sure the files has a package.json
+      this.options.files.push("package.json");
+
       // Copy app files to temp dir
       const tempAppFilesDir = Builder.createTempDir(this.options.files);
 
