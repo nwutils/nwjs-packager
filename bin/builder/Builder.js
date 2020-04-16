@@ -129,7 +129,7 @@
 
         // Rename the .app package
         const osxAppPath = path.join(appOutputDir, "nwjs.app");
-        fs.renameSync(osxAppPath, `${this.options.appPackageName}.app`);
+        fs.renameSync(osxAppPath, path.join(appOutputDir, `${this.options.appPackageName}.app`));
 
         // Move zip of app files inside of the .app
         fs.renameSync(appFilesArchivePath, path.join(osxAppPath, "Contents", "Resources", appFilesArchiveName));
