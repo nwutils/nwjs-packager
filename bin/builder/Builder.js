@@ -128,11 +128,12 @@
         console.log(`[Builder] Combine app files with nw.app`);
 
         // Rename the .app package
-        const osxAppPath = path.join(appOutputDir, "nwjs.app");
-        fs.renameSync(osxAppPath, path.join(appOutputDir, `${this.options.appPackageName}.app`));
+        const oldOsxAppPath = path.join(appOutputDir, "nwjs.app");
+        const newOsxAppPath = path.join(appOutputDir, `${this.options.appPackageName}.app`)
+        fs.renameSync(oldOsxAppPath, newOsxAppPath);
 
         // Move zip of app files inside of the .app
-        fs.renameSync(appFilesArchivePath, path.join(osxAppPath, "Contents", "Resources", appFilesArchiveName));
+        fs.renameSync(appFilesArchivePath, path.join(newOsxAppPath, "Contents", "Resources", appFilesArchiveName));
       }
 
       // Delete temporary directory
