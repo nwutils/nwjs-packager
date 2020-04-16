@@ -6,6 +6,7 @@
   const {promisify} = require("util");
   const exec = promisify(require("child_process").exec);
 
+  const archiver = require("archiver");
   const glob = require("glob");
   const copy = require("recursive-copy");
   const mkdirp = require("mkdirp");
@@ -59,11 +60,11 @@
         await promisify(rimraf)(appOutputDir);
       }
 
-      // Rename NW.js binary dir to the app output name
+      // Copy NW.js files to the app output dir
       console.log(`[Builder] Copy NW.js binary dir to ${appOutputDir}`);
       await promisify(copy)(nwDirPath, appOutputDir);
 
-      // Make sure the files has a package.json
+      // Make sure the app files have a package.json
       this.options.files.push("package.json");
 
       // Copy app files to temp dir
@@ -76,9 +77,63 @@
       console.log(child.stdout);
       console.error(child.stderr);
 
-      // Zip temp dir and rename to app.nw
+      // Zip temp dir as app.nw
+      const appFilesArchiveName = (this.platform === "osx" ? "app.nw" : "package.nw");
+      const appFilesArchivePath = path.join(appOutputDir, appFilesArchiveName);
+      console.log(`[Builder] Zip app files as ${appFilesArchiveName}`);
 
-      // Append app.nw into nw archive
+      let self = this;
+      let zipAppFiles = await new Promise(function (resolve, reject) {
+        // Create a file to stream archive data to
+        const output = fs.createWriteStream(appFilesArchivePath);
+        const archive = archiver("zip", {});
+
+        // Append files from a sub-directory, putting its contents at the root of archive
+        archive.pipe(output);
+        archive.directory(self.tempAppFilesDir, "/");
+        archive.finalize();
+
+        output.on("close", function () {
+          resolve(archive);
+        });
+
+        archive.on("error", function (err) {
+          reject(err);
+        });
+      });
+
+      // Append package.nw to the binary
+      let appendCmd;
+      if (this.platform === "win") {
+        appendCmd = `copy /b nw.exe+${appFilesArchiveName} ${this.options.appPackageName}.exe`;
+      } else if (this.platform === "linux") {
+        appendCmd = `cat nw ${appFilesArchiveName} > ${this.options.appPackageName} && chmod +x ${this.options.appPackageName}`;
+      }
+
+      // Windows and Linux
+      if (appendCmd) {
+        console.log(`[Builder] Combine app files with nw binary`);
+
+        let child = await exec(appendCmd, { cwd: appOutputDir });
+        console.log(child.stdout);
+        console.error(child.stderr);
+
+        // Remove unappended binary and app files zip
+        await promisify(rimraf)(appFilesArchivePath);
+        const nwBinaryPath = path.join(appOutputDir, (this.platform == "win" ? "nw.exe" : "nw"));
+        await promisify(rimraf)(nwBinaryPath);
+
+      // macOS
+      } else {
+        console.log(`[Builder] Combine app files with nw.app`);
+
+        // Rename the .app package
+        const osxAppPath = path.join(appOutputDir, "nw.app");
+        fs.renameSync(osxAppPath, `${this.options.appPackageName}.app`);
+
+        // Move zip of app files inside of the .app
+        fs.renameSync(appFilesArchivePath, path.join(osxAppPath, "Contents", "Resources", appFilesArchiveName));
+      }
 
       // Delete temporary directory
       console.log(`[Builder] Removed temp app files dir ${this.tempAppFilesDir}`);
