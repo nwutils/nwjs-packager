@@ -128,7 +128,7 @@
         console.log(`[Builder] Combine app files with nw.app`);
 
         // Rename the .app package
-        const osxAppPath = path.join(appOutputDir, "nw.app");
+        const osxAppPath = path.join(appOutputDir, "nwjs.app");
         fs.renameSync(osxAppPath, `${this.options.appPackageName}.app`);
 
         // Move zip of app files inside of the .app
