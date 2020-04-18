@@ -1,10 +1,12 @@
 (function () {
   "use strict";
+  const {promisify} = require("util");
   const fs = require("fs");
   const path = require("path");
 
   const bent = require("bent");
-  const extract = require("extract-zip");
+  const extractTar = promisify(require("tar").extract);
+  const extractZip = require("extract-zip");
   const getJSON = bent("json");
   const getBuffer = bent("buffer");
   const mkdirp = require("mkdirp");
@@ -63,7 +65,12 @@
         fs.writeFileSync(nwArchivePath, download);
 
         // Unzip the nw archive
-        await extract(nwArchivePath, {dir: this.cacheDir});
+        if (this.platform === "linux") {
+          await extractTar(nwArchivePath, {gzip: true, file: this.cacheDir});
+        } else {
+          await extractZip(nwArchivePath, {dir: this.cacheDir});
+        }
+
       } else {
         console.log(`[Downloader] Retrieved cached ${this.fileName()} NW.js binary`);
       }
