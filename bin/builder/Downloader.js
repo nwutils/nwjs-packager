@@ -10,6 +10,7 @@
   const getJSON = bent("json");
   const getBuffer = bent("buffer");
   const mkdirp = require("mkdirp");
+  const rimraf = require("rimraf");
 
   /**
    * Class for downloading an NW.js binary.
@@ -59,18 +60,21 @@
 
       // See if the archive is already downloaded
       if (forceDownload || !fs.existsSync(nwDirPath)) {
-        console.log(`[Downloader] Downloading ${this.fileName()} NW.js binary...`);
+        console.log(`[Downloader] Downloading ${this.fileName()} NW.js binary from ${this._url()}`);
         const nwArchivePath = path.join(this.cacheDir, `${this.fileName()}${this._archiveExtension()}`);
         const download = await getBuffer(this._url());
         fs.writeFileSync(nwArchivePath, download);
 
-        // Unzip the nw archive
+        // Extract the nw archive
+        console.log("[Downloader] Extracting binary");
         if (this.platform === "linux") {
           await extractTar(nwArchivePath, {gzip: true, file: this.cacheDir});
         } else {
           await extractZip(nwArchivePath, {dir: this.cacheDir});
         }
 
+        // Delete the archive
+        await promisify(rimraf)(nwArchivePath);
       } else {
         console.log(`[Downloader] Retrieved cached ${this.fileName()} NW.js binary`);
       }
