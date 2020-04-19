@@ -41,7 +41,7 @@
 
       // Move zip of app files inside of the .app
       const appFilesArchivePath = path.join(this.appOutputDir, "app.nw");
-      fs.renameSync(appFilesArchivePath, path.join(newOsxAppPath, "Contents", "Resources", appFilesArchiveName));
+      fs.renameSync(appFilesArchivePath, path.join(newOsxAppPath, "Contents", "Resources", "app.nw"));
 
       return;
     }
