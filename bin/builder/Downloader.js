@@ -98,7 +98,6 @@
       return downloadFileName.join("-");
     }
 
-
     /**
      * Builds the url containing the archive to download.
      * @return {String} The url containing the binary to download

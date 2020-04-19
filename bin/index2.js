@@ -13,6 +13,7 @@
   const rimraf = require("rimraf");
 
   const Builder = require("./builder/Builder");
+  const BuilderWin = require("./builder/BuilderWin");
   const Runner = require("./builder/Runner");
   const Utils = require("./Utils");
 
@@ -85,11 +86,30 @@
       runner.run();
     } else {
       // Create a builder for the current OS
-      const builder = new Builder(options);
+      const platform = Builder.nodeToNwjsPlatform(process.platform);
+      let builder;
+      switch (platform) {
+        case "win":
+          builder = new BuilderWin(options);
+          break;
+        case "osx":
+          builder = new Builder(options);
+          break;
+        case "linux":
+          builder = new Builder(options);
+          break;
+        default:
+          throw new Error(`${platform} is not a valid NW.js platform`);
+      }
+
       try {
         await builder.package();
         await builder.packageExtras();
         await builder.generateOutputs();
+
+        // Delete temporary directory
+        console.log(`[Builder] Removed temp app files dir ${builder.tempAppFilesDir}`);
+        await promisify(rimraf)(builder.tempAppFilesDir);
       } catch (err) {
         console.error(err);
 
