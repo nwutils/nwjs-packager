@@ -1,8 +1,8 @@
 {
   "name": "nwjs-packager",
-  "version": "0.3.4",
+  "version": "1.0.0",
   "description": "Module to build, add packages and release to GitHub NW.js apps",
-  "main": "bin/index2.js",
+  "main": "bin/index.js",
   "scripts": {
     "lint": "eslint ./src",
     "test": "mocha"

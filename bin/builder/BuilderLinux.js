@@ -1,5 +1,6 @@
 (function () {
   "use strict";
+  const fs = require("fs");
   const path = require("path");
   const {promisify} = require("util");
   const exec = promisify(require("child_process").exec);
@@ -19,6 +20,7 @@
 
     async packageExtras() {
       await this._appendFiles();
+      await this._makeDesktopFile();
     }
 
     /**
@@ -37,6 +39,33 @@
       await rimraf(path.join(this.appOutputDir, "package.nw"));
 
       return;
+    }
+
+    /**
+     * Creates a Linux .desktop file.
+     * @return {Promise}
+     */
+    async _makeDesktopFile() {
+      console.log("[BuilderLinux] Make .desktop file");
+
+      const filePath = path.join(this.appOutputDir, `${this.options.appPackageName}.desktop`);
+      const fileContents =
+`[Desktop Entry]
+Name=${this.options.appFriendlyName}
+Version=${this.options.appVersion}
+Exec=bash -c "cd $(dirname %k) && ./${this.options.appPackageName}"
+Type=Application
+Terminal=false`;
+
+      return new Promise((resolve, reject) => {
+        fs.writeFile(filePath, fileContents, function (error) {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        });
+      });
     }
   }
 
