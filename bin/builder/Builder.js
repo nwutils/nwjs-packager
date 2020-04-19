@@ -3,7 +3,7 @@
   const fs = require("fs");
   const path = require("path");
   const process = require("process");
-  const {promisify} = require("util");
+  const { promisify } = require("util");
   const exec = promisify(require("child_process").exec);
 
   const archiver = require("archiver");
@@ -12,6 +12,8 @@
   const mkdirp = require("mkdirp");
   const rimraf = require("rimraf");
 
+  const Archive = require("../output/Archive");
+  const Inno = require("../output/Inno");
   const Downloader = require("./Downloader");
 
   /**
@@ -38,11 +40,11 @@
       this.appOutputDir = path.join(this.options.outputDir, this._renderPackageName());
 
       this.downloader = new Downloader(
-          this.options.nwVersion,
-          this.options.nwFlavor,
-          this.platform,
-          this.architecture,
-          this.options.cacheDir,
+        this.options.nwVersion,
+        this.options.nwFlavor,
+        this.platform,
+        this.architecture,
+        this.options.cacheDir,
       );
     }
 
@@ -118,8 +120,36 @@
      * Generate the selected outputs for the build.
      */
     async generateOutputs() {
-      let outputs = this.options.builds[this.options.platform];
-      console.log(outputs);
+      let outputs = this.options.builds[this.platform];
+
+      for (const [outputName, value] of Object.entries(outputs)) {
+        if (value) {
+          console.log(`[Builder] Generating ${outputName} package`);
+          let output;
+          switch (outputName) {
+            case "zip":
+            case "tar.gz":
+              output = new Archive(
+                this.appOutputDir,
+                this.options.outputDir,
+                this._renderPackageName(),
+                outputName
+              );
+              break;
+            case "innoSetup":
+              output = new Inno(
+                this.appOutputDir,
+                this.options.outputDir,
+                this._renderPackageName(),
+                value
+              )
+              break;
+          }
+
+          await output.build();
+        }
+      }
+
       return;
     }
 

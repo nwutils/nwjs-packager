@@ -1,7 +1,9 @@
 (function () {
   "use strict";
-  const archiver = require("archiver");
   const fs = require("fs");
+  const path = require("path");
+
+  const archiver = require("archiver");
 
   const Output = require("./Output");
 
@@ -28,7 +30,7 @@
       const self = this;
       return new Promise(function (resolve, reject) {
         // Check for a valid archive format
-        if (self.format !== "zip" || self.format !== "tar.gz") {
+        if (self.format !== "zip" && self.format !== "tar.gz") {
           reject(new Error(
               `Invalid archive format "${self.format}" was supplied (must be "zip" or "tar.gz")`));
         }
@@ -40,7 +42,7 @@
 
         // Append files from a sub-directory, putting its contents at the root of archive
         archive.pipe(output);
-        archive.directory(self.inputDir, "/");
+        archive.directory(self.inputDir, `/${self.packageName}`);
         archive.finalize();
 
         output.on("close", function () {
