@@ -68,7 +68,7 @@
         // Extract the nw archive
         console.log("[Downloader] Extracting binary");
         if (this.platform === "linux") {
-          await extractTar(nwArchivePath, {gzip: true, file: this.cacheDir});
+          await extractTar({cwd: this.cacheDir, file: nwArchivePath, gzip: true});
         } else {
           await extractZip(nwArchivePath, {dir: this.cacheDir});
         }

@@ -13,6 +13,7 @@
   const rimraf = require("rimraf");
 
   const Builder = require("./builder/Builder");
+  const BuilderLinux = require("./builder/BuilderLinux");
   const BuilderOsx = require("./builder/BuilderOsx");
   const BuilderWin = require("./builder/BuilderWin");
   const Runner = require("./builder/Runner");

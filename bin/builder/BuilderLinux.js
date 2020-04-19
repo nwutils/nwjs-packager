@@ -57,15 +57,10 @@ Exec=bash -c "cd $(dirname %k) && ./${this.options.appPackageName}"
 Type=Application
 Terminal=false`;
 
-      return new Promise((resolve, reject) => {
-        fs.writeFile(filePath, fileContents, function (error) {
-          if (error) {
-            reject(error);
-          } else {
-            resolve();
-          }
-        });
-      });
+      fs.writeFileSync(filePath, fileContents);
+      fs.chmodSync(filePath, "755");
+
+      return;
     }
   }
 

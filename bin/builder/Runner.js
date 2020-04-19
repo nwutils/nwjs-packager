@@ -31,6 +31,7 @@
       const nwDirPath = await this.downloader.get();
       const nwBinaryPath = path.join(nwDirPath, this.platform === "osx" ? "nwjs.app" : "nw");
 
+      console.log("[Runner] Run nw binary");
       let command;
       if (this.platform === "osx") {
         command = await execFile("open", ["-a", nwBinaryPath, "--args", process.cwd()]);
