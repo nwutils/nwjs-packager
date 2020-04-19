@@ -13,6 +13,7 @@
   const rimraf = require("rimraf");
 
   const Builder = require("./builder/Builder");
+  const BuilderOsx = require("./builder/BuilderOsx");
   const BuilderWin = require("./builder/BuilderWin");
   const Runner = require("./builder/Runner");
   const Utils = require("./Utils");
@@ -93,10 +94,10 @@
           builder = new BuilderWin(options);
           break;
         case "osx":
-          builder = new Builder(options);
+          builder = new BuilderOsx(options);
           break;
         case "linux":
-          builder = new Builder(options);
+          builder = new BuilderLinux(options);
           break;
         default:
           throw new Error(`${platform} is not a valid NW.js platform`);

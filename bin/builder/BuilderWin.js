@@ -46,6 +46,7 @@
      * Combines the nw.exe with the app files
      */
     async _appendFiles() {
+      console.log(`[BuilderWin] Combine app files with nw binary`);
       const appendCmd = `copy /b nw.exe+package.nw ${this.options.appPackageName}.exe`;
       let child = await exec(appendCmd, { cwd: this.appOutputDir });
 

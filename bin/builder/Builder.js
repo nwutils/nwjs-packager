@@ -104,40 +104,6 @@
       });
 
       return;
-
-      // // Append package.nw to the binary
-      // let appendCmd;
-      // if (this.platform === "win") {
-      //   appendCmd = `copy /b nw.exe+${appFilesArchiveName} ${this.options.appPackageName}.exe`;
-      // } else if (this.platform === "linux") {
-      //   appendCmd = `cat nw ${appFilesArchiveName} > ${this.options.appPackageName} && chmod +x ${this.options.appPackageName}`;
-      // }
-
-      // // Windows and Linux
-      // if (appendCmd) {
-      //   console.log(`[Builder] Combine app files with nw binary`);
-
-      //   let child = await exec(appendCmd, { cwd: this.appOutputDir });
-      //   console.log(child.stdout);
-      //   console.error(child.stderr);
-
-      //   // // Remove unappended binary and app files zip
-      //   // await promisify(rimraf)(appFilesArchivePath);
-      //   // const nwBinaryPath = path.join(this.appOutputDir, (this.platform == "win" ? "nw.exe" : "nw"));
-      //   // await promisify(rimraf)(nwBinaryPath);
-
-      // // macOS
-      // } else {
-      //   console.log(`[Builder] Combine app files with nw.app`);
-
-      //   // Rename the .app package
-      //   const oldOsxAppPath = path.join(this.appOutputDir, "nwjs.app");
-      //   const newOsxAppPath = path.join(this.appOutputDir, `${this.options.appPackageName}.app`)
-      //   fs.renameSync(oldOsxAppPath, newOsxAppPath);
-
-      //   // Move zip of app files inside of the .app
-      //   fs.renameSync(appFilesArchivePath, path.join(newOsxAppPath, "Contents", "Resources", appFilesArchiveName));
-      // }
     }
 
     /**
