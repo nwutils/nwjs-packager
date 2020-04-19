@@ -8,7 +8,7 @@
     "test": "mocha"
   },
   "bin": {
-    "nwp": "./bin/index2.js"
+    "nwp": "./bin/index.js"
   },
   "repository": {
     "type": "git",
