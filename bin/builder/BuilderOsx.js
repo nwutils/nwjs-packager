@@ -5,6 +5,9 @@
   const fs = require("fs");
   const path = require("path");
 
+  const copy = require("recursive-copy");
+  const rimraf = require("rimraf");
+
   const Builder = require("./Builder");
 
   /**
@@ -13,10 +16,13 @@
   class BuilderOsx extends Builder {
     constructor(userOptions = {}, platform = null, architecture = null) {
       super(userOptions, platform, architecture);
+      this.osxAppPath = path.join(this.appOutputDir, "nwjs.app");
     }
 
     async packageExtras() {
       await this._addIcon();
+      await this._renameHelpers();
+      await this._updateInfoPlist();
       await this._appendFiles();
     }
 
@@ -25,7 +31,24 @@
      */
     async _addIcon() {
       console.log(`[BuilderOsx] Add icon to output .app`);
-      return
+
+      if (this.options.appMacIcon) {
+        const osxIconPath = path.join(this.osxAppPath, "Contents", "Resources", "app.icns");
+
+        // Replace default icon with custom one
+        await promisify(rimraf)(osxIconPath);
+        await promisify(copy)(this.options.appMacIcon, path.join(this.osxAppPath, "Contents", "Resources", "app.icns"));
+
+        return;
+      }
+    }
+
+    async _renameHelpers() {
+      return;
+    }
+
+    async _updateInfoPlist() {
+      return;
     }
 
     /**
@@ -35,9 +58,8 @@
       console.log(`[BuilderOsx] Combine app files with nw.app`);
 
       // Rename the .app package
-      const oldOsxAppPath = path.join(this.appOutputDir, "nwjs.app");
-      const newOsxAppPath = path.join(this.appOutputDir, `${this.options.appPackageName}.app`)
-      fs.renameSync(oldOsxAppPath, newOsxAppPath);
+      const newOsxAppPath = path.join(this.appOutputDir, `${this.options.appPackageName}.app`);
+      fs.renameSync(this.osxAppPath, newOsxAppPath);
 
       // Move zip of app files inside of the .app
       const appFilesArchivePath = path.join(this.appOutputDir, "app.nw");

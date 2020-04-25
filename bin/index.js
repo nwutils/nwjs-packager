@@ -117,7 +117,7 @@
 
         // Delete temporary directory if error
         if (builder.tempAppFilesDir && builder.tempAppFilesDir !== "") {
-          console.log(`[Builder] Removed temp app files dir ${this.tempAppFilesDir}`);
+          console.log(`[Builder] Removed temp app files dir ${builder.tempAppFilesDir}`);
           await promisify(rimraf)(builder.tempAppFilesDir);
         }
       }
