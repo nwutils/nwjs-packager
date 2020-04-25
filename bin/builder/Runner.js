@@ -29,15 +29,10 @@
 
       // Unzip the nw archive to the cache directory
       const nwDirPath = await this.downloader.get();
-      const nwBinaryPath = path.join(nwDirPath, this.platform === "osx" ? "nwjs.app" : "nw");
+      const nwBinaryPath = (this.platform === "osx" ? path.join(nwDirPath, "nwjs.app", "Contents", "MacOS", "nwjs") : path.join(nwDirPath, "nw"));
 
       console.log("[Runner] Run nw binary");
-      let command;
-      if (this.platform === "osx") {
-        command = await execFile("open", ["-a", nwBinaryPath, "--args", process.cwd()]);
-      } else {
-        command = await execFile(nwBinaryPath, [process.cwd()]);
-      }
+      const command = await execFile(nwBinaryPath, [process.cwd()]);
       console.log(command.stdout);
 
       return;
