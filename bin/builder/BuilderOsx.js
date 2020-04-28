@@ -21,8 +21,9 @@
 
     async packageExtras() {
       await this._addIcon();
-      await this._renameHelpers();
       await this._updateInfoPlist();
+      await this._updateInfoPlistStrings();
+      await this._renameHelpers();
       await this._appendFiles();
     }
 
@@ -43,11 +44,81 @@
       }
     }
 
-    async _renameHelpers() {
+    /**
+     * Update the app name from nwjs in all of the app plist files
+     */
+    async _updateInfoPlist() {
+      // List of files to rename in format {path: "path/to/File", keysToUpdate: ["plist", "keys", "to", "change"]}
+      const infoPlistPaths = [
+        {
+          path: "",
+          keysToUpdate: []
+        }
+      ];
+
       return;
     }
 
-    async _updateInfoPlist() {
+    /**
+     * Update the app name from nwjs/Chromium in all of the app InfoPlist.strings files (language specific translations)
+     */
+    async _updateInfoPlistStrings() {
+      return;
+    }
+
+    async _renameHelpers() {
+      // List of files to rename in tuples [old name, new name]
+      // Note nwjs Framework.framework should retain it's original name
+      const helperPaths = [
+        // Main app executable file
+        [
+          "Contents/MacOS/nwjs",
+          `Contents/MacOS/${this.options.appFriendlyName}`
+        ],
+        // App helpers
+        [
+          "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (GPU).app",
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app`
+        ],
+        [
+          "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (Plugin).app",
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app`
+        ],
+        [
+          "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (Renderer).app",
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app`
+        ],
+        [
+          "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper.app",
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app`
+        ],
+        // App helper executable files
+        [
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app/Contents/MacOS/nwjs Helper (GPU)`,
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app/Contents/MacOS/${this.options.appFriendlyName} Helper (GPU)`,
+        ],
+        [
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app/Contents/MacOS/nwjs Helper (Plugin)`,
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app/Contents/MacOS/${this.options.appFriendlyName} Helper (Plugin)`,
+        ],
+        [
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app/Contents/MacOS/nwjs Helper (Renderer)`,
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app/Contents/MacOS/${this.options.appFriendlyName} Helper (Renderer)`,
+        ],
+        [
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app/Contents/MacOS/nwjs Helper`,
+          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app/Contents/MacOS/${this.options.appFriendlyName} Helper`,
+        ]
+      ];
+
+      const self = this;
+      helperPaths.forEach(function(pathTuple) {
+        let oldPath = pathTuple[0];
+        let newPath = pathTuple[1];
+        console.log(`[BuilderOsx] Rename ${path.join(self.osxAppPath, oldPath)}`);
+        fs.renameSync(path.join(self.osxAppPath, oldPath), path.join(self.osxAppPath, newPath));
+      });
+
       return;
     }
 
@@ -58,7 +129,7 @@
       console.log(`[BuilderOsx] Combine app files with nw.app`);
 
       // Rename the .app package
-      const newOsxAppPath = path.join(this.appOutputDir, `${this.options.appPackageName}.app`);
+      const newOsxAppPath = path.join(this.appOutputDir, `${this.options.appFriendlyName}.app`);
       fs.renameSync(this.osxAppPath, newOsxAppPath);
 
       // Move zip of app files inside of the .app
