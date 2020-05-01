@@ -40,6 +40,7 @@
     "rcedit": "^2.1.1",
     "recursive-copy": "^2.0.10",
     "rimraf": "^3.0.2",
+    "simple-plist": "^1.1.0",
     "tar": "^6.0.1"
   }
 }

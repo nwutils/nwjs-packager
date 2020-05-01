@@ -7,6 +7,7 @@
 
   const copy = require("recursive-copy");
   const rimraf = require("rimraf");
+  const plist = require('simple-plist');
 
   const Builder = require("./Builder");
 
@@ -49,12 +50,60 @@
      */
     async _updateInfoPlist() {
       // List of files to rename in format {path: "path/to/File", keysToUpdate: ["plist", "keys", "to", "change"]}
+      const frameworkHelperDir =  path.join(this.osxAppPath, "Contents", "Frameworks", "nwjs Framework.framework", "Helpers");
       const infoPlistPaths = [
         {
-          path: "",
-          keysToUpdate: []
-        }
+          "path": path.join(frameworkHelperDir, "nwjs Helper (GPU).app", "Contents", "Info.plist"),
+          "keysToUpdate": {
+            "CFBundleDisplayName": this.options.appFriendlyName,
+            "CFBundleExecutable": this.options.appFriendlyName,
+            "CFBundleName": this.options.appFriendlyName
+          }
+        },
+        {
+          "path": path.join(frameworkHelperDir, "nwjs Helper (Plugin).app", "Contents", "Info.plist"),
+          "keysToUpdate": {
+            "CFBundleDisplayName": this.options.appFriendlyName,
+            "CFBundleExecutable": this.options.appFriendlyName,
+            "CFBundleName": this.options.appFriendlyName
+          }
+        },
+        {
+          "path": path.join(frameworkHelperDir, "nwjs Helper (Renderer).app", "Contents", "Info.plist"),
+          "keysToUpdate": {
+            "CFBundleDisplayName": this.options.appFriendlyName,
+            "CFBundleExecutable": this.options.appFriendlyName,
+            "CFBundleName": this.options.appFriendlyName
+          }
+        },
+        {
+          "path": path.join(frameworkHelperDir, "nwjs Helper.app", "Contents", "Info.plist"),
+          "keysToUpdate": {
+            "CFBundleDisplayName": this.options.appFriendlyName,
+            "CFBundleExecutable": this.options.appFriendlyName,
+            "CFBundleName": this.options.appFriendlyName
+          }
+        },
+        {
+          "path": path.join(this.osxAppPath, "Contents", "Info.plist"),
+          "keysToUpdate": {
+            "CFBundleDisplayName": this.options.appFriendlyName,
+            "CFBundleExecutable": this.options.appFriendlyName,
+            "CFBundleName": this.options.appFriendlyName
+          }
+        },
       ];
+
+      const self = this;
+      infoPlistPaths.forEach(function(pathObj) {
+        console.log(`[BuilderOsx] Apply Info.plist customisations to ${pathObj["path"]}`);
+        // Read the file
+        let plistData = plist.readFileSync(pathObj["path"]);
+        // Add customised options
+        plistData = Object.assign(plistData, pathObj["keysToUpdate"]);
+        // Update the file
+        plist.writeFileSync(pathObj["path"], plistData);
+      });
 
       return;
     }
