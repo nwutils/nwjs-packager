@@ -94,9 +94,8 @@
         },
       ];
 
-      const self = this;
       infoPlistPaths.forEach(function(pathObj) {
-        console.log(`[BuilderOsx] Apply Info.plist customisations to ${pathObj["path"]}`);
+        console.log(`[BuilderOsx] Update Info.plist at ${pathObj["path"]}`);
         // Read the file
         let plistData = plist.readFileSync(pathObj["path"]);
         // Add customised options

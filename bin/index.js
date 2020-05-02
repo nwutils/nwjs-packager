@@ -77,6 +77,15 @@
         "osx": {"zip": true, "pkg": true},
         "win": {"zip": true, "innoSetup": true},
       },
+
+      // macOS InfoPlist.strings files can be specified to use for different languages here
+      // Object keys should be in format "locale_id": "/path/to/InfoPlist.strings/file"
+      // Possible locale ids are listed here: https://gist.github.com/jacobbubu/1836273
+      // If locale file isn't specified, the strings in the file for the object key "default" will be used
+      // If a "default" file isn't specified, then nwjs-packager will automatically generate one
+      "infoPlistStrings": {
+        "default": null
+      }
     };
 
     // Combine default and user options
