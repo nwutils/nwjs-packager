@@ -29,10 +29,17 @@
 
       // Unzip the nw archive to the cache directory
       const nwDirPath = await this.downloader.get();
-      const nwBinaryPath = (this.platform === "osx" ? path.join(nwDirPath, "nwjs.app", "Contents", "MacOS", "nwjs") : path.join(nwDirPath, "nw"));
 
+      // Run the nw binary
       console.log("[Runner] Run nw binary");
-      const command = await execFile(nwBinaryPath, [process.cwd()]);
+      let command;
+      if (this.platform === "osx") {
+        // Note the macOS open command is used rather than navigating to nwjs.app/Contents/MacOS/nwjs
+        // because WebRTC doesn't work otherwise
+        command = await execFile("open", ["-a", path.join(nwDirPath, "nwjs.app"), "--args", process.cwd()])
+      } else {
+        command = await execFile(path.join(nwDirPath, "nw"), [process.cwd()]);
+      }
       console.log(command.stdout);
 
       return;
