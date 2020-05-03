@@ -75,7 +75,7 @@
       "builds": {
         "linux": {"tar.gz": true, "rpm": true, "deb": true},
         "osx": {"zip": true, "pkg": true},
-        "win": {"zip": true, "innoSetup": true},
+        "win": {"zip": true, "innoSetup": false},
       },
 
       // macOS InfoPlist.strings files can be specified to use for different languages here
