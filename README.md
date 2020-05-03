@@ -11,17 +11,18 @@ Build your NW.js app and generate archives, packages, setup files and more! nwjs
 
 ### macOS Features
 
-* Customise app icons
-* Properly customise Info.plist / InfoPlist.strings with your app's name
+* Customises app icons
+* Properly customises Info.plist / InfoPlist.strings with your app's name
+* Adds correct product_string to package.json to allow binaries to be renamed
 
 ### Windows Features
 
-* Customise executable icons and file properties
-* Generate an installer (using Inno Setup)
+* Customises executable icons and file properties
+* Generates an installer (using Inno Setup)
 
 ### Linux Features
 
-* Generate a .desktop file for your app
+* Generates a .desktop file for your app
 
 ## Installation
 
@@ -29,13 +30,12 @@ Build your NW.js app and generate archives, packages, setup files and more! nwjs
 
 ## Usage
 
-Add an `nwjs-packager` block to your app's package.json file. Make your you specify a `product_string` too:
+Add an `nwjs-packager` block to your app's package.json file.
 
-##### Example package.json extract
+### Example package.json extract
 
 ```jsonc
   ...
-  "product_string": "Demo App",
   "nwjs-packager": {
     "nwVersion": "v0.45.4",
     "appFriendlyName": "Demo App",
@@ -51,11 +51,15 @@ Add an `nwjs-packager` block to your app's package.json file. Make your you spec
   ...
 ```
 
+### Build mode
+
 To build your app for the current platform and architecture simply run from a terminal window:
 
 ```bash
 nwp
 ```
+
+### Run mode
 
 To quickly run your app in NW.js without building it (ie during development) run:
 
@@ -63,14 +67,12 @@ To quickly run your app in NW.js without building it (ie during development) run
 nwp -r
 ```
 
-### Options
+## Options
 
 All options should added in your app's package.json file. Possible options with their default values are:
 
 ```jsonc
   ...
-  // This option isn't part of nwjs-packager but must be specified for macOS builds to have a customised executable name
-  "product-string": "Your App's Name",
   "nwjs-packager": {
     // An array of files to include in the output packages. Globs are accepted.
     "files": [],
@@ -140,6 +142,7 @@ All options should added in your app's package.json file. Possible options with 
 * Installable packages have not been implemented for macOS or Linux yet
 * Currently you can only package a build for your current OS and architecture. (See #8)
 * Auto generation of Inno Setup .iss files has not been implemented yet
+* DO NOT add a `product_string` key to your package.json file. This will break nwjs-packager's "run mode" on macOS. nwjs-packager handles adding the a `product_string` during "build mode" only.
 
 ## Example usages
 

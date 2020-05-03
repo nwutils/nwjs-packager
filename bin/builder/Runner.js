@@ -18,7 +18,7 @@
      * @param {String} architecture The architecture to build for (x64 or ia32)
      */
     constructor(userOptions = {}, platform = null, architecture = null) {
-      super(userOptions, platform, architecture);
+      super(userOptions, platform, architecture, "sdk");
     }
 
     /**

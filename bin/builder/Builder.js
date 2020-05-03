@@ -25,8 +25,10 @@
      * @param {Object} userOptions An hash of options for the build
      * @param {String} platform The operating system to build for (default is the current platform)
      * @param {String} architecture The architecture to build for (x64 or ia32)
+     * @param {String} overrideNwFlavor The NW.js "flavor" (normal/sdk) to use. Overrides value in package.json
+     *                                  Useful because we want "run" mode to always use sdk builds
      */
-    constructor(userOptions = {}, platform = null, architecture = null) {
+    constructor(userOptions = {}, platform = null, architecture = null, overrideNwFlavor = null) {
       this.options = userOptions;
 
       // The operating system platform to build for
@@ -41,7 +43,7 @@
 
       this.downloader = new Downloader(
         this.options.nwVersion,
-        this.options.nwFlavor,
+        (overrideNwFlavor ? overrideNwFlavor : this.options.nwFlavor),
         this.platform,
         this.architecture,
         this.options.cacheDir,
@@ -73,6 +75,9 @@
       // Copy app files to temp dir
       this.tempAppFilesDir = Builder.createTempDir(this.options.files);
       console.log(`[Builder] Created temp app files dir ${this.tempAppFilesDir}`);
+
+      // Customise package.json
+      await this._customisePackageJson();
 
       // Run npm install --production
       console.log("[Builder] Running npm install --production");
@@ -163,6 +168,19 @@
       output = output.replace(/%v%/g, this.options.appVersion);
       output = output.replace(/%p%/g, `${this.platform}-${this.architecture}`);
       return output;
+    }
+
+    /**
+     * Applies customisations to the app's package.json file
+     */
+    async _customisePackageJson() {
+      console.log("[Builder] Apply customisations to app package.json");
+      let packageJSON = require(path.join(process.cwd(), "package.json"));
+
+      // Add macOS product_string
+      packageJSON["product_string"] = this.options.appFriendlyName;
+
+      fs.writeFileSync(path.join(this.tempAppFilesDir, "package.json"), JSON.stringify(packageJSON));
     }
 
     /**

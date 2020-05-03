@@ -118,9 +118,9 @@
         await builder.packageExtras();
         await builder.generateOutputs();
 
-        // Delete temporary directory
-        console.log(`[Builder] Removed temp app files dir ${builder.tempAppFilesDir}`);
-        await promisify(rimraf)(builder.tempAppFilesDir);
+        // // Delete temporary directory
+        // console.log(`[Builder] Removed temp app files dir ${builder.tempAppFilesDir}`);
+        // await promisify(rimraf)(builder.tempAppFilesDir);
       } catch (err) {
         console.error(err);
 

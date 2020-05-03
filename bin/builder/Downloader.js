@@ -51,6 +51,9 @@
         if (versions[this.nwVersion]) {
           this.nwVersion = versions[this.nwVersion];
         }
+      } else {
+        // Stick a "v" infront of numbered version numbers
+        this.nwVersion = `v${this.nwVersion}`;
       }
 
       const nwDirPath = path.join(this.cacheDir, this.fileName());
