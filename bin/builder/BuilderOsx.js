@@ -6,6 +6,7 @@
   const path = require("path");
 
   const copy = require("recursive-copy");
+  const glob = require("glob");
   const rimraf = require("rimraf");
   const plist = require('simple-plist');
 
@@ -111,8 +112,21 @@
      * Update the app name from nwjs/Chromium in all of the app InfoPlist.strings files (language specific translations)
      */
     async _updateInfoPlistStrings() {
-      const defaultInfoPlistString = `
-NSLocationUsageDescription = "(this app's developers need to add an NSLocationUsageDescription key to an InfoPlist.strings file)";
+      // Do a glob search to find all of the *.lproj/InfoPlist.strings files in Contents/Resources
+      const fileGlob = path.join(this.osxAppPath, "Contents", "Resources", "*.lproj", "InfoPlist.strings");
+      const infoPlistStringsFiles = glob.sync(fileGlob);
+
+      // Update each file with customised InfoPlist.strings files
+      await Promise.all(infoPlistStringsFiles.map(async (filePath) => {
+        await this._writeInfoPlistStrings(filePath)
+      }));
+
+      return;
+    }
+
+    async _writeInfoPlistStrings(filePath) {
+      console.log(`[BuilderOsx] Update ${filePath}`)
+      const defaultFileContents = `NSLocationUsageDescription = "(this app's developers need to add an NSLocationUsageDescription key to an InfoPlist.strings file)";
 NSCameraUsageDescription = "(this app's developers need to add an NSCameraUsageDescription key to an InfoPlist.strings file)";
 CFBundleName = "${this.options.appFriendlyName}";
 CFBundleDisplayName = "${this.options.appFriendlyName}";
@@ -120,11 +134,26 @@ CFBundleGetInfoString = "${this.options.appFriendlyName} ${this.options.appVersi
 NSHumanReadableCopyright = "${this.options.appCopyright}";
 NSBluetoothPeripheralUsageDescription = "(this app's developers need to add an NSBluetoothPeripheralUsageDescription key to an InfoPlist.strings file)";
 NSMicrophoneUsageDescription = "(this app's developers need to add an NSMicrophoneUsageDescription key to an InfoPlist.strings file)";
-      `;
+`;
 
-      // Do a glob search to find all of the *.lproj/InfoPlist.strings files in Contents/Resources
+      // This looks ridiculous but basically gets the text in the file path between ".lproj" and the "/" immediately before it
+      let localeId = filePath.split(".lproj")[0].split("/").slice("-1")[0];
 
-      // Update each file with either the user's custom file for that language, the user's default file, or nwjs-packager's default file
+      // Remove old InfoPlist.strings file
+      await promisify(rimraf)(filePath);
+
+      // Use the user's custom file for that language
+      if (this.options.infoPlistStrings.hasOwnProperty(localeId)) {
+        await promisify(copy)(this.options.infoPlistStrings[localeId], filePath);
+
+      // Or the user's default file
+      } else if (this.options.infoPlistStrings["default"]) {
+        await promisify(copy)(this.options.infoPlistStrings["default"], filePath);
+
+      // Or nwjs-packager's default file
+      } else {
+        fs.writeFileSync(filePath, defaultFileContents);
+      }
 
       return;
     }
