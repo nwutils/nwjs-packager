@@ -83,7 +83,7 @@ All options should added in your app's package.json file. Possible options with 
     // Location to output packages to
     "outputDir": "(your app's directory)/build",
 
-    // The version of NW.js to use (note versions should be in format "v0.44.5")
+    // The version of NW.js to use (note versions should be in format without the letter "v", eg: "0.44.5")
     // The strings "stable", "latest" or "lts" are also permitted
     "nwVersion": "stable",
     // The "flavor" of NW.js to use (possible values "normal" or "sdk")
