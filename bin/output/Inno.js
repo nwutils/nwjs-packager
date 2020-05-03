@@ -2,6 +2,7 @@
   "use strict";
   const childProcess = require("child_process");
   const fs = require("fs");
+  const path = require("path");
 
   const Output = require("./Output");
 
@@ -18,7 +19,7 @@
      */
     constructor(inputDir, outputDir, packageName, innoFile) {
       super(inputDir, outputDir, packageName);
-      this.innoFile = innoFile;
+      this.innoFile = path.resolve(innoFile);
       this.innoExeDir = "C:/Program Files (x86)/Inno Setup 5";
     }
 
@@ -31,6 +32,8 @@
       // Generate the .iss file if boolean value used
       if (this.innoFile === true) {
         // this.innoFile = this.methodToGenerateSetupFile();
+        console.log("[Inno] Dynamically generating .iss files has not been implemented yet.")
+        return;
       }
 
       // Check Inno Setup is installed
@@ -46,7 +49,6 @@
       });
 
       // Run the Inno Setup CLI
-      // TODO handle relative setup file paths
       const command = childProcess.execFile(`${this.innoExeDir}/ISCC.exe`, [this.innoFile]);
       command.stdout.on("data", function (data) {
         console.log(data.toString());
