@@ -66,7 +66,7 @@
 
       // NW.js 40+ implements additional helper apps that need renaming
       // NaN nwVersions are considered to be >=40 because the "latest" and "stable" versions are >=40
-      if (this.options.nwjsMajorVersion >= 40 || isNaN(this.options.nwjsMajorVersion)) {
+      if (this.nwjsMajorVersion >= 40 || isNaN(this.nwjsMajorVersion)) {
         infoPlistPaths.push(
           {
             "path": path.join(frameworkHelperDir, "nwjs Helper (GPU).app", "Contents", "Info.plist"),
@@ -194,7 +194,7 @@ NSMicrophoneUsageDescription = "(this app's developers need to add an NSMicropho
 
       // NW.js 40+ implements additional helper apps that need renaming
       // NaN nwVersions are considered to be >=40 because the "latest" and "stable" versions are >=40
-      if (this.options.nwjsMajorVersion >= 40 || isNaN(this.options.nwjsMajorVersion)) {
+      if (this.nwjsMajorVersion >= 40 || isNaN(this.nwjsMajorVersion)) {
         const frameworkHelperDir =  path.join(this.osxAppPath, "Contents", "Frameworks", "nwjs Framework.framework", "Helpers");
         helperPaths.push(
           // App helpers
