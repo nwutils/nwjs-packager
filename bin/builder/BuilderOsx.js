@@ -18,6 +18,7 @@
   class BuilderOsx extends Builder {
     constructor(userOptions = {}, platform = null, architecture = null) {
       super(userOptions, platform, architecture);
+      // The path of the nwjs.app of the build
       this.osxAppPath = path.join(this.appOutputDir, "nwjs.app");
     }
 
@@ -65,7 +66,7 @@
 
       // NW.js 40+ implements additional helper apps that need renaming
       // NaN nwVersions are considered to be >=40 because the "latest" and "stable" versions are >=40
-      if (parseInt(this.options.nwVersion.split(".")[1]) >= 40 || isNaN(this.options.nwVersion)) {
+      if (this.options.nwjsMajorVersion >= 40 || isNaN(this.options.nwjsMajorVersion)) {
         infoPlistPaths.push(
           {
             "path": path.join(frameworkHelperDir, "nwjs Helper (GPU).app", "Contents", "Info.plist"),
@@ -193,7 +194,7 @@ NSMicrophoneUsageDescription = "(this app's developers need to add an NSMicropho
 
       // NW.js 40+ implements additional helper apps that need renaming
       // NaN nwVersions are considered to be >=40 because the "latest" and "stable" versions are >=40
-      if (parseInt(this.options.nwVersion.split(".")[1]) >= 40 || isNaN(this.options.nwVersion)) {
+      if (this.options.nwjsMajorVersion >= 40 || isNaN(this.options.nwjsMajorVersion)) {
         const frameworkHelperDir =  path.join(this.osxAppPath, "Contents", "Frameworks", "nwjs Framework.framework", "Helpers");
         helperPaths.push(
           // App helpers

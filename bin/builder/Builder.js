@@ -40,6 +40,9 @@
       this.tempAppFilesDir = "";
       // The directory to create the build in
       this.appOutputDir = path.join(this.options.outputDir, this._renderPackageName());
+      // The major version of the NW.js version of the build
+      // NaN suggests "latest" or "stable" have been used
+      this.nwjsMajorVersion = this.options.nwVersion.split(".")[1];
 
       this.downloader = new Downloader(
         this.options.nwVersion,
