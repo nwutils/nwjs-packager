@@ -60,11 +60,12 @@
             "CFBundleExecutable": this.options.appFriendlyName,
             "CFBundleName": this.options.appFriendlyName
           }
-        },
+        }
       ];
 
-      // NW.js 40+ implements separate helper apps that need renaming
-      if (parseInt(this.options.nwVersion.split(".")[1]) >= 40) {
+      // NW.js 40+ implements additional helper apps that need renaming
+      // NaN nwVersions are considered to be >=40 because the "latest" and "stable" versions are >=40
+      if (parseInt(this.options.nwVersion.split(".")[1]) >= 40 || isNaN(this.options.nwVersion)) {
         infoPlistPaths.push(
           {
             "path": path.join(frameworkHelperDir, "nwjs Helper (GPU).app", "Contents", "Info.plist"),
@@ -92,6 +93,21 @@
           },
           {
             "path": path.join(frameworkHelperDir, "nwjs Helper.app", "Contents", "Info.plist"),
+            "keysToUpdate": {
+              "CFBundleDisplayName": this.options.appFriendlyName,
+              "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleName": this.options.appFriendlyName
+            }
+          }
+        );
+      } else {
+        // Pre NW.js 40 there was only 1 app helper
+        // A glob is required due to the path for this changing depending on selected the Chromium version
+        const appHelperDir = glob.sync(path.join(this.osxAppPath, "Contents", "Versions", "*"))[0];
+
+        infoPlistPaths.push(
+          {
+            "path": path.join(appHelperDir, "nwjs Helper.app", "Contents", "Info.plist"),
             "keysToUpdate": {
               "CFBundleDisplayName": this.options.appFriendlyName,
               "CFBundleExecutable": this.options.appFriendlyName,
@@ -170,47 +186,67 @@ NSMicrophoneUsageDescription = "(this app's developers need to add an NSMicropho
       let helperPaths = [
         // Main app executable file
         [
-          "Contents/MacOS/nwjs",
-          `Contents/MacOS/${this.options.appFriendlyName}`
-        ],
+          path.join(this.osxAppPath, "Contents", "MacOS", "nwjs"),
+          path.join(this.osxAppPath, "Contents", "MacOS", this.options.appFriendlyName)
+        ]
       ];
 
-      // NW.js 40+ implements separate helper apps that need renaming
-      if (parseInt(this.options.nwVersion.split(".")[1]) >= 40) {
+      // NW.js 40+ implements additional helper apps that need renaming
+      // NaN nwVersions are considered to be >=40 because the "latest" and "stable" versions are >=40
+      if (parseInt(this.options.nwVersion.split(".")[1]) >= 40 || isNaN(this.options.nwVersion)) {
+        const frameworkHelperDir =  path.join(this.osxAppPath, "Contents", "Frameworks", "nwjs Framework.framework", "Helpers");
         helperPaths.push(
           // App helpers
           [
-            "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (GPU).app",
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app`
+            path.join(frameworkHelperDir, "nwjs Helper (GPU).app"),
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (GPU).app`)
           ],
           [
-            "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (Plugin).app",
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app`
+            path.join(frameworkHelperDir, "nwjs Helper (Plugin).app"),
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (Plugin).app`)
           ],
           [
-            "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (Renderer).app",
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app`
+            path.join(frameworkHelperDir, "nwjs Helper (Renderer).app"),
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (Renderer).app`)
           ],
           [
-            "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper.app",
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app`
+            path.join(frameworkHelperDir, "nwjs Helper.app"),
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper.app`)
           ],
           // App helper executable files
           [
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app/Contents/MacOS/nwjs Helper (GPU)`,
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app/Contents/MacOS/${this.options.appFriendlyName} Helper (GPU)`,
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (GPU).app`, "Contents", "MacOS", "nwjs Helper (GPU)"),
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (GPU).app`, "Contents", "MacOS", `${this.options.appFriendlyName} Helper (GPU)`)
           ],
           [
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app/Contents/MacOS/nwjs Helper (Plugin)`,
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app/Contents/MacOS/${this.options.appFriendlyName} Helper (Plugin)`,
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (Plugin).app`, "Contents", "MacOS", "nwjs Helper (Plugin)"),
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (Plugin).app`, "Contents", "MacOS", `${this.options.appFriendlyName} Helper (Plugin)`)
           ],
           [
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app/Contents/MacOS/nwjs Helper (Renderer)`,
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app/Contents/MacOS/${this.options.appFriendlyName} Helper (Renderer)`,
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (Renderer).app`, "Contents", "MacOS", "nwjs Helper (Renderer)"),
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper (Renderer).app`, "Contents", "MacOS", `${this.options.appFriendlyName} Helper (Renderer)`)
           ],
           [
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app/Contents/MacOS/nwjs Helper`,
-            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app/Contents/MacOS/${this.options.appFriendlyName} Helper`,
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper.app`, "Contents", "MacOS", "nwjs Helper"),
+            path.join(frameworkHelperDir, `${this.options.appFriendlyName} Helper.app`, "Contents", "MacOS", `${this.options.appFriendlyName} Helper`)
+          ]
+        );
+      } else {
+        // Pre NW.js 40 there was only 1 app helper
+        // A glob is required due to the path for this changing depending on selected the Chromium version
+        const appHelperDir = glob.sync(path.join(this.osxAppPath, "Contents", "Versions", "*"))[0];
+        console.log(appHelperDir);
+
+        helperPaths.push(
+          // App helper
+          [
+            path.join(appHelperDir, "nwjs Helper.app"),
+            path.join(appHelperDir, `${this.options.appFriendlyName} Helper.app`)
+          ],
+           // App helper executable file
+          [
+            path.join(appHelperDir,`${this.options.appFriendlyName} Helper.app`, "Contents", "MacOS", "nwjs Helper"),
+            path.join(appHelperDir, `${this.options.appFriendlyName} Helper.app`, "Contents", "MacOS", `${this.options.appFriendlyName} Helper`)
           ]
         );
       }
@@ -219,8 +255,8 @@ NSMicrophoneUsageDescription = "(this app's developers need to add an NSMicropho
       helperPaths.forEach(function(pathTuple) {
         let oldPath = pathTuple[0];
         let newPath = pathTuple[1];
-        console.log(`[BuilderOsx] Rename ${path.join(self.osxAppPath, oldPath)}`);
-        fs.renameSync(path.join(self.osxAppPath, oldPath), path.join(self.osxAppPath, newPath));
+        console.log(`[BuilderOsx] Rename ${oldPath}`);
+        fs.renameSync(oldPath, newPath);
       });
 
       return;
