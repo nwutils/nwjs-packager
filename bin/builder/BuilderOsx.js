@@ -52,39 +52,7 @@
     async _updateInfoPlist() {
       // List of files to rename in format {path: "path/to/File", keysToUpdate: ["plist", "keys", "to", "change"]}
       const frameworkHelperDir =  path.join(this.osxAppPath, "Contents", "Frameworks", "nwjs Framework.framework", "Helpers");
-      const infoPlistPaths = [
-        {
-          "path": path.join(frameworkHelperDir, "nwjs Helper (GPU).app", "Contents", "Info.plist"),
-          "keysToUpdate": {
-            "CFBundleDisplayName": this.options.appFriendlyName,
-            "CFBundleExecutable": this.options.appFriendlyName,
-            "CFBundleName": this.options.appFriendlyName
-          }
-        },
-        {
-          "path": path.join(frameworkHelperDir, "nwjs Helper (Plugin).app", "Contents", "Info.plist"),
-          "keysToUpdate": {
-            "CFBundleDisplayName": this.options.appFriendlyName,
-            "CFBundleExecutable": this.options.appFriendlyName,
-            "CFBundleName": this.options.appFriendlyName
-          }
-        },
-        {
-          "path": path.join(frameworkHelperDir, "nwjs Helper (Renderer).app", "Contents", "Info.plist"),
-          "keysToUpdate": {
-            "CFBundleDisplayName": this.options.appFriendlyName,
-            "CFBundleExecutable": this.options.appFriendlyName,
-            "CFBundleName": this.options.appFriendlyName
-          }
-        },
-        {
-          "path": path.join(frameworkHelperDir, "nwjs Helper.app", "Contents", "Info.plist"),
-          "keysToUpdate": {
-            "CFBundleDisplayName": this.options.appFriendlyName,
-            "CFBundleExecutable": this.options.appFriendlyName,
-            "CFBundleName": this.options.appFriendlyName
-          }
-        },
+      let infoPlistPaths = [
         {
           "path": path.join(this.osxAppPath, "Contents", "Info.plist"),
           "keysToUpdate": {
@@ -94,6 +62,44 @@
           }
         },
       ];
+
+      // NW.js 40+ implements separate helper apps that need renaming
+      if (parseInt(this.options.nwVersion.split(".")[1]) >= 40) {
+        infoPlistPaths.push(
+          {
+            "path": path.join(frameworkHelperDir, "nwjs Helper (GPU).app", "Contents", "Info.plist"),
+            "keysToUpdate": {
+              "CFBundleDisplayName": this.options.appFriendlyName,
+              "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleName": this.options.appFriendlyName
+            }
+          },
+          {
+            "path": path.join(frameworkHelperDir, "nwjs Helper (Plugin).app", "Contents", "Info.plist"),
+            "keysToUpdate": {
+              "CFBundleDisplayName": this.options.appFriendlyName,
+              "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleName": this.options.appFriendlyName
+            }
+          },
+          {
+            "path": path.join(frameworkHelperDir, "nwjs Helper (Renderer).app", "Contents", "Info.plist"),
+            "keysToUpdate": {
+              "CFBundleDisplayName": this.options.appFriendlyName,
+              "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleName": this.options.appFriendlyName
+            }
+          },
+          {
+            "path": path.join(frameworkHelperDir, "nwjs Helper.app", "Contents", "Info.plist"),
+            "keysToUpdate": {
+              "CFBundleDisplayName": this.options.appFriendlyName,
+              "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleName": this.options.appFriendlyName
+            }
+          }
+        );
+      }
 
       infoPlistPaths.forEach(function(pathObj) {
         console.log(`[BuilderOsx] Update Info.plist at ${pathObj["path"]}`);
@@ -161,47 +167,53 @@ NSMicrophoneUsageDescription = "(this app's developers need to add an NSMicropho
     async _renameHelpers() {
       // List of files to rename in tuples [old name, new name]
       // Note nwjs Framework.framework should retain it's original name
-      const helperPaths = [
+      let helperPaths = [
         // Main app executable file
         [
           "Contents/MacOS/nwjs",
           `Contents/MacOS/${this.options.appFriendlyName}`
         ],
-        // App helpers
-        [
-          "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (GPU).app",
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app`
-        ],
-        [
-          "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (Plugin).app",
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app`
-        ],
-        [
-          "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (Renderer).app",
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app`
-        ],
-        [
-          "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper.app",
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app`
-        ],
-        // App helper executable files
-        [
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app/Contents/MacOS/nwjs Helper (GPU)`,
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app/Contents/MacOS/${this.options.appFriendlyName} Helper (GPU)`,
-        ],
-        [
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app/Contents/MacOS/nwjs Helper (Plugin)`,
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app/Contents/MacOS/${this.options.appFriendlyName} Helper (Plugin)`,
-        ],
-        [
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app/Contents/MacOS/nwjs Helper (Renderer)`,
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app/Contents/MacOS/${this.options.appFriendlyName} Helper (Renderer)`,
-        ],
-        [
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app/Contents/MacOS/nwjs Helper`,
-          `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app/Contents/MacOS/${this.options.appFriendlyName} Helper`,
-        ]
       ];
+
+      // NW.js 40+ implements separate helper apps that need renaming
+      if (parseInt(this.options.nwVersion.split(".")[1]) >= 40) {
+        helperPaths.push(
+          // App helpers
+          [
+            "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (GPU).app",
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app`
+          ],
+          [
+            "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (Plugin).app",
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app`
+          ],
+          [
+            "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper (Renderer).app",
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app`
+          ],
+          [
+            "Contents/Frameworks/nwjs Framework.framework/Helpers/nwjs Helper.app",
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app`
+          ],
+          // App helper executable files
+          [
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app/Contents/MacOS/nwjs Helper (GPU)`,
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (GPU).app/Contents/MacOS/${this.options.appFriendlyName} Helper (GPU)`,
+          ],
+          [
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app/Contents/MacOS/nwjs Helper (Plugin)`,
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Plugin).app/Contents/MacOS/${this.options.appFriendlyName} Helper (Plugin)`,
+          ],
+          [
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app/Contents/MacOS/nwjs Helper (Renderer)`,
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper (Renderer).app/Contents/MacOS/${this.options.appFriendlyName} Helper (Renderer)`,
+          ],
+          [
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app/Contents/MacOS/nwjs Helper`,
+            `Contents/Frameworks/nwjs Framework.framework/Helpers/${this.options.appFriendlyName} Helper.app/Contents/MacOS/${this.options.appFriendlyName} Helper`,
+          ]
+        );
+      }
 
       const self = this;
       helperPaths.forEach(function(pathTuple) {
