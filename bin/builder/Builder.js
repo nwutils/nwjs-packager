@@ -91,27 +91,32 @@
       // Zip temp dir as app.nw
       const appFilesArchiveName = (this.platform === "osx" ? "app.nw" : "package.nw");
       const appFilesArchivePath = path.join(this.appOutputDir, appFilesArchiveName);
-      console.log(`[Builder] Zip app files as ${appFilesArchiveName}`);
 
-      let self = this;
-      let zipAppFiles = await new Promise(function (resolve, reject) {
-        // Create a file to stream archive data to
-        const output = fs.createWriteStream(appFilesArchivePath);
-        const archive = archiver("zip", {});
+      if (this.platform === "osx") {
+        console.log(`[Builder] Copy app files to ${appFilesArchiveName}`);
+        await promisify(copy)(this.tempAppFilesDir, appFilesArchivePath);
+      } else {
+        console.log(`[Builder] Zip app files as ${appFilesArchiveName}`);
+        let self = this;
+        let zipAppFiles = await new Promise(function (resolve, reject) {
+          // Create a file to stream archive data to
+          const output = fs.createWriteStream(appFilesArchivePath);
+          const archive = archiver("zip", {});
 
-        // Append files from a sub-directory, putting its contents at the root of archive
-        archive.pipe(output);
-        archive.directory(self.tempAppFilesDir, "/");
-        archive.finalize();
+          // Append files from a sub-directory, putting its contents at the root of archive
+          archive.pipe(output);
+          archive.directory(self.tempAppFilesDir, "/");
+          archive.finalize();
 
-        output.on("close", function () {
-          resolve(archive);
+          output.on("close", function () {
+            resolve(archive);
+          });
+
+          archive.on("error", function (err) {
+            reject(err);
+          });
         });
-
-        archive.on("error", function (err) {
-          reject(err);
-        });
-      });
+      }
 
       return;
     }
