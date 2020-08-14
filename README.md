@@ -37,7 +37,7 @@ Add an `nwjs-packager` block to your app's package.json file.
 ```jsonc
   ...
   "nwjs-packager": {
-    "nwVersion": "v0.45.4",
+    "nwVersion": "0.45.4",
     "appFriendlyName": "Demo App",
     "appMacIcon": "bin/icon.icns",
     "appWinIcon": "bin/icon.ico",
