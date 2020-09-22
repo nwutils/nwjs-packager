@@ -1,6 +1,6 @@
 {
   "name": "nwjs-packager",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "Module to build, add packages and release to GitHub NW.js apps",
   "main": "bin/index.js",
   "scripts": {
@@ -36,7 +36,6 @@
     "glob": "^7.1.6",
     "minimist": "^1.2.5",
     "mkdirp": "^1.0.3",
-    "nw-builder": "^3.5.7",
     "rcedit": "^2.1.1",
     "recursive-copy": "^2.0.10",
     "rimraf": "^3.0.2",
