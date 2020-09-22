@@ -135,6 +135,11 @@
     async generateOutputs() {
       let outputs = this.options.builds[this.platform];
 
+      if (!outputs) {
+        console.log("[Builder] No builds have been specified for the current platform")
+        return;
+      }
+
       for (const [outputName, value] of Object.entries(outputs)) {
         if (value) {
           console.log(`[Builder] Generating ${outputName} package`);
