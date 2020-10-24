@@ -19,8 +19,15 @@
      */
     constructor(inputDir, outputDir, packageName, format) {
       super(inputDir, outputDir, packageName);
-      this.format = format;
-      this.archiverOptions = (this.format === "tar.gz" ? {gzip: true} : {});
+
+      // Handle tar.gz
+      if (format === "tar.gz") {
+        this.format = "tar";
+        this.archiverOptions = {gzip: true};
+      } else {
+        this.format = format;
+        this.archiverOptions = {};
+      }
     }
 
     /**
@@ -30,9 +37,9 @@
       const self = this;
       return new Promise(function (resolve, reject) {
         // Check for a valid archive format
-        if (self.format !== "zip" && self.format !== "tar.gz") {
+        if (self.format !== "zip" && self.format !== "tar") {
           reject(new Error(
-              `Invalid archive format "${self.format}" was supplied (must be "zip" or "tar.gz")`));
+              `Invalid archive format "${self.format}" was supplied. Possible values are "zip" or "tar(.gz)".`));
         }
 
         // Create a file to stream archive data to
