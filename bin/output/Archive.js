@@ -42,8 +42,14 @@
               `Invalid archive format "${self.format}" was supplied. Possible values are "zip" or "tar(.gz)".`));
         }
 
+        // Make the file name
+        let fileName = `${self.packageName}.${self.format}`;
+        if (this.archiverOptions["gzip"]) {
+          fileName += ".gzip";
+        }
+
         // Create a file to stream archive data to
-        const outputPath = path.join(self.outputDir, `${self.packageName}.${self.format}`);
+        const outputPath = path.join(self.outputDir, fileName);
         const output = fs.createWriteStream(outputPath);
         const archive = archiver(self.format, self.archiverOptions);
 
