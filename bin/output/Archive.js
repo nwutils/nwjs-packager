@@ -44,7 +44,7 @@
 
         // Make the file name
         let fileName = `${self.packageName}.${self.format}`;
-        if (this.archiverOptions["gzip"]) {
+        if (self.archiverOptions["gzip"]) {
           fileName += ".gzip";
         }
 
