@@ -45,7 +45,7 @@
         // Make the file name
         let fileName = `${self.packageName}.${self.format}`;
         if (self.archiverOptions["gzip"]) {
-          fileName += ".gzip";
+          fileName += ".gz";
         }
 
         // Create a file to stream archive data to
