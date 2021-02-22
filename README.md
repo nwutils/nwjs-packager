@@ -144,10 +144,9 @@ All options should added in your app's package.json file. Possible options with 
 * Auto generation of Inno Setup .iss files has not been implemented yet
 * DO NOT add a `product_string` key to your package.json file. This will break nwjs-packager's "run mode" on macOS. nwjs-packager handles adding the a `product_string` during "build mode" only.
 
-## Example usages
+## Example usage
 
-* **[nwjs-packager-demo](https://github.com/charlielee/nwjs-packager-demo)** - a demo NW.js application used for testing.
-* **[Boats Animator](https://github.com/charlielee/boats-animator)**
+**[nwjs-packager-demo](https://github.com/charlielee/nwjs-packager-demo)** - a demo NW.js application used for testing.
 
 ## License
 
