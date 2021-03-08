@@ -52,6 +52,9 @@
       // The "flavor" of NW.js to use (possible values "normal" or "sdk")
       "nwFlavor": "normal",
 
+      // Whether to run `npm install production` after copying app files
+      "runNpmInstallProduction": true,
+
       // The nerd name for the app to use in file names (ie there should be no spaces)
       "appPackageName": packageJSON["name"],
       // The version of the app

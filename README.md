@@ -89,6 +89,9 @@ All options should added in your app's package.json file. Possible options with 
     // The "flavor" of NW.js to use (possible values "normal" or "sdk")
     "nwFlavor": "normal",
 
+    // Whether to run `npm install production` after copying app files
+    "runNpmInstallProduction": true,
+
     // The nerd name for the app to use in file names (ie there should be no spaces)
     "appPackageName": "(the 'name' value in your package.json)",
     // The version of the app

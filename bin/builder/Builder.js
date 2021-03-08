@@ -83,10 +83,12 @@
       await this._customisePackageJson();
 
       // Run npm install --production
-      console.log("[Builder] Running npm install --production");
-      let child = await exec("npm install --production", { cwd: this.tempAppFilesDir });
-      console.log(child.stdout);
-      console.error(child.stderr);
+      if (this.options.runNpmInstallProduction) {
+        console.log("[Builder] Running npm install --production");
+        let child = await exec("npm install --production", { cwd: this.tempAppFilesDir });
+        console.log(child.stdout);
+        console.error(child.stderr);
+      }
 
       // Zip temp dir as app.nw
       const appFilesArchiveName = (this.platform === "osx" ? "app.nw" : "package.nw");
