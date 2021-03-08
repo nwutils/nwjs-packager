@@ -59,6 +59,7 @@
           "keysToUpdate": {
             "CFBundleDisplayName": this.options.appFriendlyName,
             "CFBundleExecutable": this.options.appFriendlyName,
+            "CFBundleIdentifier": this.options.appMacBundleIdentifier,
             "CFBundleName": this.options.appFriendlyName
           }
         }
@@ -73,6 +74,7 @@
             "keysToUpdate": {
               "CFBundleDisplayName": this.options.appFriendlyName,
               "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleIdentifier": `${this.options.appMacBundleIdentifier}.helper`,
               "CFBundleName": this.options.appFriendlyName
             }
           },
@@ -81,6 +83,7 @@
             "keysToUpdate": {
               "CFBundleDisplayName": this.options.appFriendlyName,
               "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleIdentifier": `${this.options.appMacBundleIdentifier}.helper.plugin`,
               "CFBundleName": this.options.appFriendlyName
             }
           },
@@ -89,6 +92,7 @@
             "keysToUpdate": {
               "CFBundleDisplayName": this.options.appFriendlyName,
               "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleIdentifier": `${this.options.appMacBundleIdentifier}.helper.renderer`,
               "CFBundleName": this.options.appFriendlyName
             }
           },
@@ -97,6 +101,7 @@
             "keysToUpdate": {
               "CFBundleDisplayName": this.options.appFriendlyName,
               "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleIdentifier": `${this.options.appMacBundleIdentifier}.helper`,
               "CFBundleName": this.options.appFriendlyName
             }
           }
@@ -112,6 +117,7 @@
             "keysToUpdate": {
               "CFBundleDisplayName": this.options.appFriendlyName,
               "CFBundleExecutable": this.options.appFriendlyName,
+              "CFBundleIdentifier": `${this.options.appMacBundleIdentifier}.helper`,
               "CFBundleName": this.options.appFriendlyName
             }
           }
