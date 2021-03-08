@@ -63,6 +63,9 @@
       "appFriendlyName": Utils.titleCase(packageJSON["name"].replace(/[-_]/g, " ")),
       // A path to a .icns file to use for generating the macOS icon
       "appMacIcon": null,
+      // Unique, case sensitive bundle identifier in reverse-DNS format. Should be changed to prevent ID collisions
+      // See https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleidentifier
+      "appMacBundleIdentifier": "io.nwjs.nwjs",
       // A path to an .ico file to use for generating the Windows icon
       "appWinIcon": null,
       // A short description of the app. Used in the macOS Info.plist and Windows fileVersion.

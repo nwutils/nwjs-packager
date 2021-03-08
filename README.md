@@ -100,6 +100,8 @@ All options should added in your app's package.json file. Possible options with 
     "appFriendlyName": "(the 'name' value in your package.json, made titlecase and with '_' and '-' characters replaced with spaces)",
     // A path to a .icns file to use for generating the macOS icon
     "appMacIcon": null,
+    // Unique, case sensitive bundle identifier in reverse-DNS format. Should be changed to prevent ID collisions
+    "appMacBundleIdentifier": "io.nwjs.nwjs",
     // A path to an .ico file to use for generating the Windows icon
     "appWinIcon": null,
     // A short description of the app. Used in the macOS Info.plist and Windows fileVersion.
