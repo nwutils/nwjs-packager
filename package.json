@@ -4,25 +4,24 @@
   "description": "Module to build, add packages and release to GitHub NW.js apps",
   "main": "bin/index.js",
   "scripts": {
-    "lint": "eslint ./src",
-    "test": "mocha"
+    "lint": "eslint ./src"
   },
   "bin": {
     "nwp": "./bin/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/charlielee/nwjs-packager.git"
+    "url": "git+https://github.com/nwutils/nwjs-packager.git"
   },
   "author": "Charlie Lee",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/charlielee/nwjs-packager/issues"
+    "url": "https://github.com/nwutils/nwjs-packager/issues"
   },
-  "homepage": "https://github.com/charlielee/nwjs-packager#readme",
+  "homepage": "https://github.com/nwutils/nwjs-packager#readme",
   "engines": {
-    "node": ">=10.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=20.3.1 || >=18.16.1 || >=16.20.2",
+    "npm": ">=9.7.2"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
