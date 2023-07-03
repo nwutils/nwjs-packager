@@ -1,3 +1,5 @@
+> This repository is in maintainance mode. Bug fixes will be provided on a best effort basis. If you use this project, please consider contributing back.
+
 # nwjs-packager
 
 Build your NW.js app and generate archives, packages, setup files and more! nwjs-packager focuses on making building NW.js "just work".
