@@ -34,7 +34,7 @@
     "extract-zip": "^2.0.0",
     "glob": "^10.3.1",
     "minimist": "^1.2.5",
-    "mkdirp": "^1.0.3",
+    "mkdirp": "^3.0.1",
     "rcedit": "^3.0.1",
     "recursive-copy": "^2.0.10",
     "rimraf": "^5.0.1",
