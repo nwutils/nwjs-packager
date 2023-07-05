@@ -29,7 +29,7 @@
     "mocha": "^10.2.0"
   },
   "dependencies": {
-    "archiver": "^3.1.1",
+    "archiver": "^5.3.1",
     "bent": "^7.1.2",
     "extract-zip": "^2.0.0",
     "glob": "^7.1.6",
