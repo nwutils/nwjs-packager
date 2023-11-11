@@ -35,7 +35,7 @@
     "glob": "^10.3.10",
     "minimist": "^1.2.5",
     "mkdirp": "^3.0.1",
-    "rcedit": "^4.0.0",
+    "rcedit": "^4.0.1",
     "recursive-copy": "^2.0.10",
     "rimraf": "^5.0.5",
     "simple-plist": "^1.1.0",
