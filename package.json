@@ -24,7 +24,7 @@
     "npm": ">=9.7.2"
   },
   "devDependencies": {
-    "eslint": "^8.53.0",
+    "eslint": "^8.54.0",
     "eslint-config-google": "^0.14.0",
     "mocha": "^10.2.0"
   },
