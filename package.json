@@ -19,10 +19,6 @@
     "url": "https://github.com/nwutils/nwjs-packager/issues"
   },
   "homepage": "https://github.com/nwutils/nwjs-packager#readme",
-  "engines": {
-    "node": ">=20.3.1 || >=18.16.1 || >=16.20.2",
-    "npm": ">=9.7.2"
-  },
   "devDependencies": {
     "eslint": "^8.56.0",
     "eslint-config-google": "^0.14.0",
