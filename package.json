@@ -22,13 +22,13 @@
   "devDependencies": {
     "eslint": "^8.57.0",
     "eslint-config-google": "^0.14.0",
-    "mocha": "^10.3.0"
+    "mocha": "^10.4.0"
   },
   "dependencies": {
     "archiver": "^7.0.1",
     "bent": "^7.1.2",
     "extract-zip": "^2.0.0",
-    "glob": "^10.3.10",
+    "glob": "^10.3.12",
     "minimist": "^1.2.5",
     "mkdirp": "^3.0.1",
     "rcedit": "^4.0.1",
